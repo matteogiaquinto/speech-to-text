@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Speech to text — browser demo</title>
+  </head>
+  <body>
+    <main>
+      <h1>Speech to text</h1>
+      <p>Démo locale avec Whisper dans le navigateur.</p>
+      <div class="actions">
+        <button id="prepare">Préparer le modèle</button>
+        <button id="start" disabled>Commencer</button>
+        <button id="stop" disabled>Arrêter et transcrire</button>
+      </div>
+      <p id="status" aria-live="polite">État : idle</p>
+      <output id="transcript">La transcription apparaîtra ici.</output>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

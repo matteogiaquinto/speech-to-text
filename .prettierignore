@@ -1,0 +1,4 @@
+dist
+node_modules
+.pnpm-store
+examples/browser/dist

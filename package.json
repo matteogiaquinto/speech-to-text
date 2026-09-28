@@ -1,0 +1,65 @@
+{
+  "name": "@matteogiaquinto/speech-to-text",
+  "version": "0.1.0",
+  "description": "Small browser-only speech-to-text wrapper around browser-whisper.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/matteogiaquinto/speech-to-text.git"
+  },
+  "homepage": "https://github.com/matteogiaquinto/speech-to-text#readme",
+  "bugs": {
+    "url": "https://github.com/matteogiaquinto/speech-to-text/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "packageManager": "pnpm@11.19.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "prepare": "pnpm build",
+    "test": "vitest run",
+    "lint": "eslint src test examples/browser/src --max-warnings=0",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "format:check": "prettier --check .",
+    "example:dev": "vite --config examples/browser/vite.config.mjs",
+    "example:build": "vite build --config examples/browser/vite.config.mjs"
+  },
+  "keywords": [
+    "speech-to-text",
+    "whisper",
+    "browser",
+    "webgpu",
+    "french"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "browser-whisper": "^1.1.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.36.0",
+    "@types/node": "^24.5.2",
+    "eslint": "^9.36.0",
+    "prettier": "^3.6.2",
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.44.1",
+    "vite": "^7.3.1",
+    "vitest": "^3.2.4"
+  }
+}
