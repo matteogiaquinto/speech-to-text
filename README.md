@@ -41,6 +41,14 @@ const speech = createSpeechToText({
 
 The optional statuses are `idle`, `loading`, `ready`, `recording`, `transcribing`, and `error`.
 
+## Integrating into a product
+
+For CRM/forms/admin interfaces, follow [INTEGRATION.md](INTEGRATION.md). It defines the standard microphone-button placement, lifecycle, field-update behavior, loading/recording/transcribing states, multiple-field behavior, cache semantics, deployment constraints, and acceptance checklist.
+
+Coding agents working from this repository should also follow [AGENTS.md](AGENTS.md).
+
+The standard UI is an icon-only microphone control embedded at the far right of the target input. The package should be installed from npm and reused as a long-lived instance; consumer applications should not fork or reimplement the Whisper engine.
+
 ## Lifecycle
 
 - `prepare()` downloads and loads the selected model without opening the microphone. The engine instance is retained for later recordings.
@@ -52,16 +60,24 @@ The optional statuses are `idle`, `loading`, `ready`, `recording`, `transcribing
 
 ## Browser requirements and privacy
 
-This package inherits browser-whisper’s limitations: model downloads are substantial (`whisper-base` is approximately 136 MB), first use requires network access, and browser support/performance depends on WebGPU, WebCodecs, and WASM fallbacks. For threaded WASM, serve pages with cross-origin isolation headers:
+This package inherits browser-whisper’s limitations: model downloads are substantial (`whisper-base` is approximately 136 MB), first use requires network access, and browser support/performance depends on WebGPU, WebCodecs, and WASM fallbacks. For threaded WASM, serve pages with cross-origin isolation headers when required:
 
 ```text
 Cross-Origin-Embedder-Policy: require-corp
 Cross-Origin-Opener-Policy: same-origin
 ```
 
+Do not add those headers blindly to an existing product; they can affect third-party resources. Verify the complete application when enabling cross-origin isolation.
+
 The included Vite example configures these headers for development and preview. Importing this package is SSR-safe; browser APIs and browser-whisper are accessed only when a lifecycle method runs. The package is intended for short 2–30 second commands, form input, and notes—not long meetings or diarization.
 
 Audio and transcription remain in the user’s browser. Review browser-whisper’s own hosting, cache, and model-download behavior before making privacy guarantees for a production application.
+
+### Model cache
+
+Downloaded model files are stored in browser origin-private storage and normally reused on later visits to the same origin. The useful cache scope is **browser profile + site origin**, not the whole machine.
+
+A different domain/subdomain, browser/profile, private session, cleared site data, or different computer can require another download. Calling `dispose()` releases runtime resources but does not clear the downloaded model.
 
 ## Composition with text-to-data
 
