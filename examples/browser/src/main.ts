@@ -4,6 +4,7 @@ import {
   type SpeechToTextStatus,
 } from "@matteogiaquinto/speech-to-text";
 import { GlideSelect } from "./glide-select";
+import { initSideRays } from "./side-rays";
 import "./style.css";
 
 type DemoModel = "whisper-tiny" | "whisper-base" | "whisper-small";
@@ -39,7 +40,7 @@ type ClickSpark = {
   startTime: number;
 };
 
-function initClickSpark() {
+export function initClickSpark() {
   const container = document.querySelector<HTMLElement>(
     "[data-click-spark-color]",
   );
@@ -127,7 +128,7 @@ function initClickSpark() {
   resize();
 }
 
-function initInteractiveDotsGridBackground() {
+export function initInteractiveDotsGridBackground() {
   const elements = document.querySelectorAll<HTMLElement>(
     "[data-dots-canvas-init]",
   );
@@ -440,6 +441,7 @@ const modelRoot = document.querySelector<HTMLElement>("#model");
 const copyInstall = document.querySelector<HTMLButtonElement>("#copy-install");
 const voiceTime = document.querySelector<HTMLElement>("#voice-time");
 const voiceWave = document.querySelector<HTMLCanvasElement>("#voice-wave");
+const themeToggle = document.querySelector<HTMLButtonElement>("#theme-toggle");
 
 if (
   !input ||
@@ -455,6 +457,32 @@ if (
 ) {
   throw new Error("The demo page is missing required elements.");
 }
+
+function setTheme(theme: "dark" | "light") {
+  document.documentElement.dataset.theme = theme;
+  const light = theme === "light";
+  themeToggle?.setAttribute("aria-pressed", String(light));
+  themeToggle?.setAttribute(
+    "aria-label",
+    light ? "Switch to dark mode" : "Switch to light mode",
+  );
+  themeToggle?.setAttribute(
+    "title",
+    light ? "Switch to dark mode" : "Switch to light mode",
+  );
+  try {
+    localStorage.setItem("speech-to-text-theme", theme);
+  } catch {
+    // Theme persistence is an enhancement when storage is unavailable.
+  }
+}
+
+setTheme(document.documentElement.dataset.theme === "dark" ? "dark" : "light");
+themeToggle?.addEventListener("click", () => {
+  setTheme(
+    document.documentElement.dataset.theme === "light" ? "dark" : "light",
+  );
+});
 
 const language = new GlideSelect(languageRoot, {
   ariaLabel: "Language",
@@ -774,8 +802,7 @@ function updateSlide(clientX: number) {
   if (progress >= 1) cancelRecording();
 }
 
-initClickSpark();
-initInteractiveDotsGridBackground();
+initSideRays({ spread: 3 });
 initPromptComposerBorderGlow();
 speech = createEngine();
 renderStatus("idle");

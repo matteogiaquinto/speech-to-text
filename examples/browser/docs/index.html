@@ -7,13 +7,22 @@
       name="description"
       content="Documentation for @matteogiaquinto/speech-to-text, a small browser package for private, local Whisper dictation."
     />
-    <meta name="theme-color" content="#070712" />
+    <meta name="theme-color" content="#f8fafc" />
+    <script>
+      try {
+        document.documentElement.dataset.theme =
+          localStorage.getItem("speech-to-text-theme") || "light";
+      } catch {
+        document.documentElement.dataset.theme = "light";
+      }
+    </script>
     <link rel="icon" href="/speech-to-text-mark.svg" type="image/svg+xml" />
     <link rel="icon" href="/favicon-32x32.png" sizes="32x32" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <title>Documentation · speech-to-text</title>
   </head>
   <body>
+    <div class="docs-side-rays" data-side-rays aria-hidden="true"></div>
     <header class="docs-header">
       <a class="brand" href="../" aria-label="speech-to-text home">
         <img
@@ -44,6 +53,31 @@
         <a href="https://www.npmjs.com/package/@matteogiaquinto/speech-to-text"
           >npm</a
         >
+        <button
+          id="theme-toggle"
+          class="theme-toggle"
+          type="button"
+          aria-label="Switch to dark mode"
+          aria-pressed="true"
+          title="Switch to dark mode"
+        >
+          <svg class="theme-toggle__sun" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path
+              d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"
+            ></path>
+          </svg>
+          <svg
+            class="theme-toggle__moon"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path
+              d="M20.4 14.5A8.5 8.5 0 0 1 9.5 3.6 8.5 8.5 0 1 0 20.4 14.5Z"
+            ></path>
+          </svg>
+          <span class="sr-only">Toggle color theme</span>
+        </button>
         <a
           class="github-button"
           href="https://github.com/matteogiaquinto/speech-to-text"

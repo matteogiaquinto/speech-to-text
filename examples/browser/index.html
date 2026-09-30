@@ -7,7 +7,15 @@
       name="description"
       content="Try local Whisper speech-to-text directly in your browser. No backend, no API key, no audio upload."
     />
-    <meta name="theme-color" content="#070712" />
+    <meta name="theme-color" content="#f8fafc" />
+    <script>
+      try {
+        document.documentElement.dataset.theme =
+          localStorage.getItem("speech-to-text-theme") || "light";
+      } catch {
+        document.documentElement.dataset.theme = "light";
+      }
+    </script>
     <link
       rel="canonical"
       href="https://matteogiaquinto.github.io/speech-to-text/"
@@ -56,16 +64,8 @@
     <title>Speech-to-text for any web input</title>
   </head>
   <body>
-    <main
-      class="page-shell click-spark"
-      data-click-spark-color="#ffffff"
-      data-click-spark-size="10"
-      data-click-spark-radius="10"
-      data-click-spark-count="6"
-      data-click-spark-duration="300"
-      data-click-spark-extra-scale="2"
-    >
-      <canvas class="click-spark__canvas" aria-hidden="true"></canvas>
+    <main class="page-shell">
+      <div class="side-rays" data-side-rays aria-hidden="true"></div>
       <nav class="topbar" aria-label="Project links">
         <a
           class="brand"
@@ -91,21 +91,45 @@
             >npm</a
           >
         </div>
-        <a
-          class="github-link"
-          href="https://github.com/matteogiaquinto/speech-to-text"
-          >View on GitHub <span aria-hidden="true">↗</span></a
-        >
+        <div class="topbar-actions">
+          <button
+            id="theme-toggle"
+            class="theme-toggle"
+            type="button"
+            aria-label="Switch to light mode"
+            aria-pressed="false"
+            title="Switch to light mode"
+          >
+            <svg
+              class="theme-toggle__sun"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="12" r="4"></circle>
+              <path
+                d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"
+              ></path>
+            </svg>
+            <svg
+              class="theme-toggle__moon"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path
+                d="M20.4 14.5A8.5 8.5 0 0 1 9.5 3.6 8.5 8.5 0 1 0 20.4 14.5Z"
+              ></path>
+            </svg>
+            <span class="sr-only">Toggle color theme</span>
+          </button>
+          <a
+            class="github-link"
+            href="https://github.com/matteogiaquinto/speech-to-text"
+            >View on GitHub <span aria-hidden="true">↗</span></a
+          >
+        </div>
       </nav>
 
       <section class="hero">
-        <div
-          class="interactive-dots-grid"
-          data-dots-canvas-init
-          data-dots-color-inactive="rgba(253, 243, 221, 0.055)"
-          data-dots-color-active="rgba(253, 243, 221, 0.2)"
-          aria-hidden="true"
-        ></div>
         <a
           class="release-pill"
           href="https://github.com/matteogiaquinto/speech-to-text"
@@ -177,23 +201,6 @@
                   <span class="voice-pill__spinner"></span>
                 </span>
               </button>
-
-              <span class="voice-callout" aria-hidden="true">
-                <svg viewBox="0 0 108 88">
-                  <path
-                    class="voice-callout__arrow voice-callout__arrow--top"
-                    d="M101 5C72 4 50 12 14 30m0 0 8-10m-8 10 13 2"
-                  />
-                  <path
-                    class="voice-callout__arrow voice-callout__arrow--middle"
-                    d="M104 43C72 42 47 44 14 46m0 0 10-8m-10 8 11 7"
-                  />
-                  <path
-                    class="voice-callout__arrow voice-callout__arrow--bottom"
-                    d="M98 83C72 76 48 69 14 62m0 0 13-4m-13 4 9 10"
-                  />
-                </svg>
-              </span>
             </div>
           </div>
 

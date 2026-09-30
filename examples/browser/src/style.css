@@ -29,18 +29,7 @@ body::before {
   position: fixed;
   z-index: -1;
   inset: 0;
-  background:
-    radial-gradient(
-      ellipse 46% 42% at 34% 82%,
-      rgba(135, 44, 35, 0.3),
-      transparent 70%
-    ),
-    radial-gradient(
-      ellipse 45% 42% at 70% 78%,
-      rgba(50, 57, 135, 0.28),
-      transparent 72%
-    ),
-    linear-gradient(180deg, #070712 0%, #090812 52%, #0b0911 100%);
+  background: #070712;
   content: "";
   pointer-events: none;
 }
@@ -75,17 +64,17 @@ a {
 
 .page-shell {
   position: relative;
+  isolation: isolate;
   width: 100%;
   margin: 0 auto;
 }
 
-.click-spark__canvas {
-  position: absolute;
-  z-index: 10;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
+.topbar,
+.hero,
+.how-it-works,
+footer {
+  position: relative;
+  z-index: 1;
 }
 
 .topbar {
@@ -95,6 +84,12 @@ a {
   width: min(1480px, calc(100% - 64px));
   min-height: 80px;
   margin: 0 auto;
+}
+
+.topbar-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
 }
 
 .brand,
@@ -160,19 +155,67 @@ footer a:hover {
   background: rgba(255, 255, 255, 0.06);
 }
 
+.theme-toggle {
+  display: inline-grid;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.04);
+  color: #f8f5ef;
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease;
+}
+
+.theme-toggle:hover {
+  border-color: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.theme-toggle:focus-visible {
+  outline: 2px solid #909cff;
+  outline-offset: 3px;
+}
+
+.theme-toggle svg {
+  grid-area: 1 / 1;
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.theme-toggle__sun {
+  display: none;
+}
+
+:root[data-theme="light"] .theme-toggle__moon {
+  display: none;
+}
+
+:root[data-theme="light"] .theme-toggle__sun {
+  display: block;
+}
+
 .hero {
   position: relative;
   width: min(1100px, calc(100% - 48px));
   min-height: calc(100vh - 80px);
   margin: 0 auto;
   padding: clamp(130px, 15vh, 190px) 80px 84px;
-  border-right: 1px solid rgba(255, 255, 255, 0.09);
-  border-left: 1px solid rgba(255, 255, 255, 0.09);
   text-align: center;
 }
 
-.interactive-dots-grid {
-  position: absolute;
+.side-rays {
+  position: fixed;
   z-index: 0;
   inset: 0;
   width: 100%;
@@ -181,19 +224,10 @@ footer a:hover {
   pointer-events: none;
 }
 
-.hero > :not(.interactive-dots-grid) {
-  position: relative;
-  z-index: 1;
-}
-
-.hero::before {
-  position: absolute;
-  top: 96px;
-  right: 0;
-  left: 0;
-  height: 1px;
-  background: rgba(255, 255, 255, 0.08);
-  content: "";
+.side-rays canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .release-pill {
@@ -672,34 +706,6 @@ footer a:hover {
   transition-property: opacity, filter;
 }
 
-.voice-callout {
-  position: absolute;
-  z-index: 1;
-  right: -116px;
-  bottom: 0;
-  width: 108px;
-  height: 88px;
-  color: #ffffff;
-  pointer-events: none;
-}
-
-.voice-callout svg {
-  display: block;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-}
-
-.voice-callout__arrow {
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  opacity: 0.92;
-  vector-effect: non-scaling-stroke;
-}
-
 .hint {
   flex: 1 1 auto;
   min-height: 20px;
@@ -733,6 +739,184 @@ footer a:hover {
   color: #d7dce4;
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
   font-size: 13px;
+}
+
+:root[data-theme="light"] {
+  color: #171923;
+  background: #f8fafc;
+}
+
+:root[data-theme="light"] body,
+:root[data-theme="light"] body::before {
+  background: #f8fafc;
+}
+
+:root[data-theme="light"] .brand,
+:root[data-theme="light"] .github-link {
+  color: #171923;
+}
+
+:root[data-theme="light"] .nav-links a,
+:root[data-theme="light"] footer a {
+  color: rgba(23, 25, 35, 0.68);
+}
+
+:root[data-theme="light"] .nav-links a:hover,
+:root[data-theme="light"] footer a:hover {
+  color: #000000;
+}
+
+:root[data-theme="light"] .github-link,
+:root[data-theme="light"] .theme-toggle {
+  border-color: rgba(23, 25, 35, 0.28);
+  background: rgba(255, 255, 255, 0.62);
+  color: #171923;
+}
+
+:root[data-theme="light"] .github-link:hover,
+:root[data-theme="light"] .theme-toggle:hover {
+  border-color: rgba(23, 25, 35, 0.62);
+  background: #ffffff;
+}
+
+:root[data-theme="light"] .release-pill {
+  border: 1px solid rgba(23, 25, 35, 0.12);
+  box-shadow: 0 4px 12px rgba(23, 25, 35, 0.08);
+}
+
+:root[data-theme="light"] .shimmer-text {
+  background-color: rgba(23, 25, 35, 0.48);
+  background-image: linear-gradient(
+    120deg,
+    transparent 40%,
+    #171923 50%,
+    transparent 60%
+  );
+}
+
+:root[data-theme="light"] .hero-copy,
+:root[data-theme="light"] .section-copy {
+  color: rgba(23, 25, 35, 0.68);
+}
+
+:root[data-theme="light"] .prompt-composer {
+  border-color: rgba(23, 25, 35, 0.13);
+  background: rgba(255, 255, 255, 0.84);
+  box-shadow:
+    0 12px 30px -18px rgba(23, 25, 35, 0.25),
+    inset 0 1px rgba(255, 255, 255, 0.8);
+}
+
+:root[data-theme="light"] .prompt-composer:focus-within {
+  border-color: rgba(23, 25, 35, 0.26);
+  box-shadow:
+    0 12px 30px -18px rgba(23, 25, 35, 0.25),
+    0 0 0 3px rgba(0, 87, 255, 0.12);
+}
+
+:root[data-theme="light"] .prompt-composer textarea {
+  color: #171923;
+}
+
+:root[data-theme="light"] .prompt-composer textarea::placeholder {
+  color: rgba(23, 25, 35, 0.42);
+}
+
+:root[data-theme="light"] .voice-pill {
+  --voice-accent: #171923;
+  --voice-icon: #4b5563;
+  --voice-bg: #edf0f4;
+}
+
+:root[data-theme="light"]
+  .voice-pill[data-state="idle"]:hover
+  .voice-pill__capsule,
+:root[data-theme="light"]
+  .voice-pill[data-state="ready"]:hover
+  .voice-pill__capsule {
+  background: #dde2e9;
+}
+
+:root[data-theme="light"] .voice-pill__spinner {
+  border-color: rgba(23, 25, 35, 0.16);
+  border-top-color: #171923;
+}
+
+:root[data-theme="light"] .status-pill,
+:root[data-theme="light"] .install-card,
+:root[data-theme="light"] .pipeline div {
+  border-color: rgba(23, 25, 35, 0.12);
+  background: rgba(255, 255, 255, 0.64);
+}
+
+:root[data-theme="light"] .status-pill {
+  color: #5d6775;
+}
+
+:root[data-theme="light"] .hint {
+  color: #5d6775;
+}
+
+:root[data-theme="light"] .install-card code {
+  color: #252a35;
+}
+
+:root[data-theme="light"] .install-card button {
+  background: #171923;
+  color: #ffffff;
+}
+
+:root[data-theme="light"] .install-card button:hover {
+  background: #303543;
+}
+
+:root[data-theme="light"] .trust-row {
+  color: rgba(23, 25, 35, 0.62);
+}
+
+:root[data-theme="light"] .how-it-works {
+  border-color: rgba(23, 25, 35, 0.13);
+}
+
+:root[data-theme="light"] .pipeline div {
+  color: rgba(23, 25, 35, 0.8);
+}
+
+:root[data-theme="light"] .pipeline > span,
+:root[data-theme="light"] footer {
+  color: #687282;
+}
+
+:root[data-theme="light"] footer {
+  border-color: rgba(23, 25, 35, 0.12);
+}
+
+:root[data-theme="light"] .glide-select {
+  --gs-surface: rgba(23, 25, 35, 0.07);
+  --gs-highlight: rgba(23, 25, 35, 0.1);
+  --gs-text: #171923;
+}
+
+:root[data-theme="light"] .glide-select__trigger {
+  color: rgba(23, 25, 35, 0.72);
+}
+
+:root[data-theme="light"] .glide-select__trigger:focus-visible {
+  outline-color: rgba(23, 25, 35, 0.55);
+}
+
+:root[data-theme="light"] .glide-select__menu {
+  border-color: rgba(23, 25, 35, 0.14);
+  background: #ffffff;
+  box-shadow: 0 14px 34px rgba(23, 25, 35, 0.18);
+}
+
+:root[data-theme="light"] .glide-select__option[aria-selected="true"] {
+  background: rgba(23, 25, 35, 0.06);
+}
+
+:root[data-theme="light"] .glide-select__tag {
+  color: rgba(23, 25, 35, 0.48);
 }
 
 .prompt {
@@ -883,23 +1067,7 @@ footer {
   }
 }
 
-@media (max-width: 920px) {
-  .voice-callout {
-    right: -79px;
-    bottom: -16px;
-    width: 84px;
-    height: 68px;
-  }
-}
-
 @media (max-width: 680px) {
-  .voice-callout {
-    right: -69px;
-    bottom: -26px;
-    width: 72px;
-    height: 59px;
-  }
-
   .page-shell {
     width: 100%;
   }
@@ -917,6 +1085,11 @@ footer {
     min-height: 34px;
     padding: 0 13px;
     font-size: 0;
+  }
+
+  .theme-toggle {
+    width: 34px;
+    height: 34px;
   }
 
   .github-link::before {

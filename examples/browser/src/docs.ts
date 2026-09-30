@@ -1,8 +1,10 @@
 import "./docs.css";
+import { initSideRays } from "./side-rays";
 
 const menuButton = document.querySelector<HTMLButtonElement>("#menu-button");
 const sidebar = document.querySelector<HTMLElement>("#docs-sidebar");
 const backdrop = document.querySelector<HTMLElement>("#sidebar-backdrop");
+const themeToggle = document.querySelector<HTMLButtonElement>("#theme-toggle");
 const navigationLinks = [
   ...document.querySelectorAll<HTMLAnchorElement>(
     '.docs-sidebar a[href^="#"], .page-toc a[href^="#"]',
@@ -18,6 +20,34 @@ function setMenu(open: boolean) {
   );
   document.body.toggleAttribute("data-menu-open", open);
 }
+
+function setTheme(theme: "dark" | "light") {
+  document.documentElement.dataset.theme = theme;
+  const light = theme === "light";
+  themeToggle?.setAttribute("aria-pressed", String(light));
+  themeToggle?.setAttribute(
+    "aria-label",
+    light ? "Switch to dark mode" : "Switch to light mode",
+  );
+  themeToggle?.setAttribute(
+    "title",
+    light ? "Switch to dark mode" : "Switch to light mode",
+  );
+  try {
+    localStorage.setItem("speech-to-text-theme", theme);
+  } catch {
+    // Theme persistence is an enhancement when storage is unavailable.
+  }
+}
+
+setTheme(document.documentElement.dataset.theme === "dark" ? "dark" : "light");
+themeToggle?.addEventListener("click", () => {
+  setTheme(
+    document.documentElement.dataset.theme === "light" ? "dark" : "light",
+  );
+});
+
+initSideRays({ spread: 3 });
 
 menuButton?.addEventListener("click", () => {
   setMenu(menuButton.getAttribute("aria-expanded") !== "true");

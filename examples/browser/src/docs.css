@@ -31,12 +31,37 @@ body {
     #090910;
 }
 
+.docs-side-rays {
+  position: fixed;
+  z-index: 0;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.docs-side-rays canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
 button {
   font: inherit;
 }
 
 a {
   color: inherit;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 code,
@@ -91,6 +116,42 @@ pre {
   display: flex;
   align-items: center;
   gap: 26px;
+}
+
+.theme-toggle {
+  display: inline-grid;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.04);
+  color: #f8f5ef;
+  cursor: pointer;
+}
+
+.theme-toggle svg {
+  grid-area: 1 / 1;
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.theme-toggle__sun {
+  display: none;
+}
+
+:root[data-theme="light"] .theme-toggle__moon {
+  display: none;
+}
+
+:root[data-theme="light"] .theme-toggle__sun {
+  display: block;
 }
 
 .header-links a {
@@ -814,6 +875,128 @@ dt code {
   font-size: 11px;
   font-weight: 750;
   text-decoration: none;
+}
+
+:root[data-theme="light"] {
+  color: #171923;
+  background: #f8fafc;
+}
+
+:root[data-theme="light"] body {
+  background: #f8fafc;
+}
+
+:root[data-theme="light"] .docs-header {
+  border-color: rgba(23, 25, 35, 0.12);
+  background: rgba(248, 250, 252, 0.82);
+}
+
+:root[data-theme="light"] .brand-section,
+:root[data-theme="light"] .header-links a,
+:root[data-theme="light"] .sidebar-group a,
+:root[data-theme="light"] .page-toc a,
+:root[data-theme="light"] .sidebar-footer a,
+:root[data-theme="light"] .doc-section > p,
+:root[data-theme="light"] .lead,
+:root[data-theme="light"] .fine-print,
+:root[data-theme="light"] .lifecycle-card p,
+:root[data-theme="light"] .docs-footer,
+:root[data-theme="light"] .docs-footer a {
+  color: rgba(23, 25, 35, 0.64);
+}
+
+:root[data-theme="light"] .header-links a:hover,
+:root[data-theme="light"] .sidebar-group a:hover,
+:root[data-theme="light"] .sidebar-group a.active,
+:root[data-theme="light"] .page-toc a:hover,
+:root[data-theme="light"] .page-toc a.active {
+  color: #171923;
+}
+
+:root[data-theme="light"] .brand-divider,
+:root[data-theme="light"] .docs-sidebar,
+:root[data-theme="light"] .sidebar-footer,
+:root[data-theme="light"] .doc-section,
+:root[data-theme="light"] .page-toc,
+:root[data-theme="light"] .docs-footer {
+  border-color: rgba(23, 25, 35, 0.12);
+}
+
+:root[data-theme="light"] .docs-sidebar {
+  background: rgba(248, 250, 252, 0.48);
+}
+
+:root[data-theme="light"] .sidebar-group p,
+:root[data-theme="light"] .page-toc p,
+:root[data-theme="light"] .sidebar-footer {
+  color: rgba(23, 25, 35, 0.46);
+}
+
+:root[data-theme="light"] .sidebar-group a:hover,
+:root[data-theme="light"] .sidebar-group a.active,
+:root[data-theme="light"] .page-toc a:hover,
+:root[data-theme="light"] .page-toc a.active {
+  background: rgba(23, 25, 35, 0.06);
+}
+
+:root[data-theme="light"] .github-button,
+:root[data-theme="light"] .theme-toggle,
+:root[data-theme="light"] .menu-button {
+  border-color: rgba(23, 25, 35, 0.26);
+  background: rgba(255, 255, 255, 0.68);
+  color: #171923;
+}
+
+:root[data-theme="light"] .callout,
+:root[data-theme="light"] .lifecycle-card,
+:root[data-theme="light"] .status-table,
+:root[data-theme="light"] .api-card,
+:root[data-theme="light"] .requirement-card,
+:root[data-theme="light"] .voice-specimen,
+:root[data-theme="light"] .formula,
+:root[data-theme="light"] .code-block {
+  border-color: rgba(23, 25, 35, 0.13);
+  background: rgba(255, 255, 255, 0.72);
+  color: #252a35;
+}
+
+:root[data-theme="light"] .code-block {
+  background: #ffffff;
+  box-shadow: 0 20px 60px -42px rgba(23, 25, 35, 0.35);
+}
+
+:root[data-theme="light"] .code-label,
+:root[data-theme="light"] .copy-button,
+:root[data-theme="light"] th,
+:root[data-theme="light"] td,
+:root[data-theme="light"] .lifecycle-card code,
+:root[data-theme="light"] .api-card code,
+:root[data-theme="light"] .requirement-card code {
+  color: #3e4755;
+}
+
+:root[data-theme="light"] .copy-button {
+  border-color: rgba(23, 25, 35, 0.2);
+  background: rgba(23, 25, 35, 0.06);
+}
+
+:root[data-theme="light"] .copy-button:hover {
+  background: rgba(23, 25, 35, 0.12);
+  color: #171923;
+}
+
+:root[data-theme="light"] .callout-note,
+:root[data-theme="light"] .api-card,
+:root[data-theme="light"] .requirement-card {
+  background: rgba(255, 255, 255, 0.68);
+}
+
+:root[data-theme="light"] .token-comment {
+  color: #7a8190;
+}
+
+:root[data-theme="light"] .mobile-sidebar-note {
+  background: #ffffff;
 }
 
 @media (max-width: 1120px) {
