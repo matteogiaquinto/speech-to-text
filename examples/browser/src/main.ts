@@ -175,7 +175,8 @@ function renderStatus(status: SpeechToTextStatus) {
   const isRecording = status === "recording";
 
   microphone.dataset.state = status;
-  if (busy) microphone.dataset.busy = "";\n  else delete microphone.dataset.busy;
+  if (busy) microphone.dataset.busy = "";
+  else delete microphone.dataset.busy;
   microphone.setAttribute("aria-pressed", String(isRecording));
   microphone.setAttribute(
     "aria-label",
