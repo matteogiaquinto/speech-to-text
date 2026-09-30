@@ -1,7 +1,7 @@
 {
   "name": "@matteogiaquinto/speech-to-text",
   "version": "0.1.0",
-  "description": "Small browser-only speech-to-text wrapper around browser-whisper.",
+  "description": "Local speech-to-text for web apps. Add private Whisper-powered dictation to any input with no backend or API key.",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -46,6 +46,11 @@
     "whisper",
     "browser",
     "webgpu",
+    "dictation",
+    "voice",
+    "local-ai",
+    "privacy",
+    "typescript",
     "french"
   ],
   "license": "MIT",

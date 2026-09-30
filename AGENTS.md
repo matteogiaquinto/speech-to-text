@@ -102,3 +102,19 @@ Before any future npm release:
 Use `npm version minor` or `npm version major` only when the release semantics justify it.
 
 Publishing requires authentication for the npm organization and npm's required 2FA/security-key flow. Do not change the package scope to work around an authentication or permission error.
+
+
+## Public repository quality
+
+This is a public package and should remain presentable as a pinned GitHub project.
+
+When changing public-facing material:
+
+- Keep the README product-oriented and concise near the top.
+- Keep the browser demo in `examples/browser` functional and visually representative of the recommended input integration.
+- Do not add a UI framework dependency only for the demo.
+- Preserve the CI workflow and keep all quality checks green.
+- Keep the public demo deployable as a static Vite build.
+- Prefer screenshots/preview assets that accurately represent the real integration behavior.
+- Do not claim that audio is uploaded or processed remotely; model files may be downloaded, but transcription itself is local.
+- Do not claim the model cache is global to the whole machine. Cache scope is browser profile + site origin.

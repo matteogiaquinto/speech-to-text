@@ -1,0 +1,50 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="170" y1="40" x2="1000" y2="620" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#171B2D"/>
+      <stop offset="1" stop-color="#0B0D10"/>
+    </linearGradient>
+    <filter id="shadow" x="0" y="0" width="1200" height="630" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="24" stdDeviation="28" flood-color="#000000" flood-opacity="0.28"/>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="630" rx="28" fill="url(#bg)"/>
+  <circle cx="984" cy="36" r="260" fill="#5B6DFF" fill-opacity="0.09"/>
+  <circle cx="158" cy="594" r="220" fill="#7F56D9" fill-opacity="0.07"/>
+
+  <g font-family="Inter, Segoe UI, Arial, sans-serif">
+    <text x="90" y="116" fill="#909CFF" font-size="20" font-weight="700" letter-spacing="2">LOCAL WHISPER · BROWSER-ONLY</text>
+    <text x="90" y="184" fill="#F5F7FA" font-size="52" font-weight="700" letter-spacing="-2">Speech-to-text for web apps.</text>
+    <text x="90" y="226" fill="#A9B1BD" font-size="24">Private dictation. No backend. No API key. No audio upload.</text>
+
+    <g filter="url(#shadow)">
+      <rect x="90" y="286" width="1020" height="188" rx="22" fill="#12151B" stroke="#FFFFFF" stroke-opacity="0.1"/>
+      <text x="124" y="330" fill="#C9CFD8" font-size="16" font-weight="600">Try dictation</text>
+      <rect x="124" y="350" width="952" height="66" rx="14" fill="#0D1014" stroke="#FFFFFF" stroke-opacity="0.12"/>
+      <text x="146" y="391" fill="#F5F7FA" font-size="21">Créer un nouveau client et préparer la facture de septembre</text>
+
+      <rect x="1017" y="359" width="48" height="48" rx="12" fill="#FF6575" fill-opacity="0.12" stroke="#FF6575" stroke-opacity="0.26"/>
+      <rect x="1035" y="370" width="12" height="22" rx="6" stroke="#FF7180" stroke-width="2"/>
+      <path d="M1029 384C1029 393 1035 398 1041 398C1047 398 1053 393 1053 384" stroke="#FF7180" stroke-width="2" stroke-linecap="round"/>
+      <path d="M1041 398V405" stroke="#FF7180" stroke-width="2" stroke-linecap="round"/>
+      <path d="M1035 405H1047" stroke="#FF7180" stroke-width="2" stroke-linecap="round"/>
+
+      <circle cx="137" cy="447" r="5" fill="#58C98B"/>
+      <text x="151" y="453" fill="#8E98A6" font-size="15">Model cached locally · whisper-base · French</text>
+    </g>
+
+    <g>
+      <rect x="90" y="520" width="172" height="42" rx="21" fill="#FFFFFF" fill-opacity="0.05" stroke="#FFFFFF" stroke-opacity="0.08"/>
+      <text x="124" y="547" fill="#B8C0CB" font-size="15">✓ No backend</text>
+
+      <rect x="278" y="520" width="166" height="42" rx="21" fill="#FFFFFF" fill-opacity="0.05" stroke="#FFFFFF" stroke-opacity="0.08"/>
+      <text x="310" y="547" fill="#B8C0CB" font-size="15">✓ No API key</text>
+
+      <rect x="460" y="520" width="190" height="42" rx="21" fill="#FFFFFF" fill-opacity="0.05" stroke="#FFFFFF" stroke-opacity="0.08"/>
+      <text x="492" y="547" fill="#B8C0CB" font-size="15">✓ Audio stays local</text>
+
+      <text x="952" y="547" fill="#6F7987" font-size="15">@matteogiaquinto</text>
+    </g>
+  </g>
+</svg>

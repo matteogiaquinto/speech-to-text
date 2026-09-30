@@ -1,22 +1,157 @@
 <!doctype html>
-<html lang="fr">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Speech to text — browser demo</title>
+    <meta
+      name="description"
+      content="Try local Whisper speech-to-text directly in your browser. No backend, no API key, no audio upload."
+    />
+    <meta name="theme-color" content="#0b0d10" />
+    <meta property="og:title" content="Local speech-to-text for web apps" />
+    <meta
+      property="og:description"
+      content="Add private, browser-native dictation to any input."
+    />
+    <title>Speech to text — local browser demo</title>
   </head>
   <body>
-    <main>
-      <h1>Speech to text</h1>
-      <p>Démo locale avec Whisper dans le navigateur.</p>
-      <div class="actions">
-        <button id="prepare">Préparer le modèle</button>
-        <button id="start" disabled>Commencer</button>
-        <button id="stop" disabled>Arrêter et transcrire</button>
-      </div>
-      <p id="status" aria-live="polite">État : idle</p>
-      <output id="transcript">La transcription apparaîtra ici.</output>
+    <main class="page-shell">
+      <nav class="topbar" aria-label="Project links">
+        <a class="brand" href="https://github.com/matteogiaquinto/speech-to-text">
+          <span class="brand-mark" aria-hidden="true">STT</span>
+          <span>speech-to-text</span>
+        </a>
+        <div class="nav-links">
+          <a href="https://www.npmjs.com/package/@matteogiaquinto/speech-to-text"
+            >npm</a
+          >
+          <a href="https://github.com/matteogiaquinto/speech-to-text">GitHub</a>
+        </div>
+      </nav>
+
+      <section class="hero">
+        <div class="eyebrow">Local Whisper · browser-only</div>
+        <h1>Speech-to-text for any web input.</h1>
+        <p class="hero-copy">
+          Add private dictation without a backend, API key, or audio upload.
+          Everything runs locally in your browser.
+        </p>
+
+        <div class="demo-card">
+          <div class="demo-heading">
+            <div>
+              <p class="demo-kicker">Live demo</p>
+              <h2>Click the microphone and speak.</h2>
+            </div>
+            <div id="status-pill" class="status-pill" data-state="idle">
+              <span class="status-dot" aria-hidden="true"></span>
+              <span id="status-text" aria-live="polite">Ready when you are</span>
+            </div>
+          </div>
+
+          <label class="field-label" for="speech-input">Try dictation</label>
+          <div class="speech-field">
+            <input
+              id="speech-input"
+              type="text"
+              autocomplete="off"
+              placeholder="Type here or dictate with the microphone…"
+            />
+            <button
+              id="microphone"
+              class="mic-button"
+              type="button"
+              aria-label="Start dictation"
+              title="Start dictation"
+            >
+              <svg
+                class="mic-icon"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <rect x="9" y="2.5" width="6" height="12" rx="3"></rect>
+                <path d="M5.5 10.5a6.5 6.5 0 0 0 13 0"></path>
+                <path d="M12 17v4"></path>
+                <path d="M8.5 21h7"></path>
+              </svg>
+              <span class="spinner" aria-hidden="true"></span>
+            </button>
+          </div>
+
+          <div class="settings-row">
+            <label>
+              <span>Language</span>
+              <select id="language">
+                <option value="fr" selected>French</option>
+                <option value="en">English</option>
+                <option value="de">German</option>
+                <option value="it">Italian</option>
+                <option value="es">Spanish</option>
+              </select>
+            </label>
+
+            <label>
+              <span>Model</span>
+              <select id="model">
+                <option value="whisper-tiny">whisper-tiny</option>
+                <option value="whisper-base" selected>whisper-base</option>
+                <option value="whisper-small">whisper-small</option>
+              </select>
+            </label>
+          </div>
+
+          <p id="hint" class="hint">
+            First use may download the selected model. Later visits to this site
+            normally reuse the browser cache.
+          </p>
+        </div>
+
+        <div class="install-card" aria-label="Installation command">
+          <div>
+            <span class="prompt" aria-hidden="true">$</span>
+            <code>pnpm add @matteogiaquinto/speech-to-text</code>
+          </div>
+          <button id="copy-install" type="button">Copy</button>
+        </div>
+
+        <div class="trust-row">
+          <span>No backend</span>
+          <span>No API key</span>
+          <span>Audio stays local</span>
+          <span>TypeScript</span>
+        </div>
+      </section>
+
+      <section class="how-it-works" aria-labelledby="how-title">
+        <p class="section-kicker">How it works</p>
+        <h2 id="how-title">A small wrapper around the hard parts.</h2>
+        <div class="pipeline">
+          <div>Microphone</div>
+          <span aria-hidden="true">→</span>
+          <div>speech-to-text</div>
+          <span aria-hidden="true">→</span>
+          <div>browser-whisper</div>
+          <span aria-hidden="true">→</span>
+          <div>Whisper</div>
+          <span aria-hidden="true">→</span>
+          <div>Plain text</div>
+        </div>
+      </section>
+
+      <footer>
+        <span>MIT licensed</span>
+        <a href="https://github.com/matteogiaquinto/speech-to-text/blob/main/INTEGRATION.md"
+          >Integration guide</a
+        >
+      </footer>
     </main>
+
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

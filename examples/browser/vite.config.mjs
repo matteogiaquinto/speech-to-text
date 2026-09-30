@@ -1,3 +1,5 @@
+import { resolve } from "node:path";
+
 const headers = {
   "Cross-Origin-Embedder-Policy": "require-corp",
   "Cross-Origin-Opener-Policy": "same-origin",
@@ -5,6 +7,7 @@ const headers = {
 
 export default {
   root: "examples/browser",
+  base: "./",
   resolve: {
     alias: {
       "@matteogiaquinto/speech-to-text": resolve("src/index.ts"),
@@ -13,4 +16,3 @@ export default {
   server: { headers },
   preview: { headers },
 };
-import { resolve } from "node:path";
