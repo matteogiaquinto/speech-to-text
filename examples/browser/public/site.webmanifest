@@ -8,14 +8,20 @@
   "theme_color": "#070712",
   "icons": [
     {
-      "src": "speech-to-text-mark.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
+      "src": "favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png",
       "purpose": "any"
     },
     {
       "src": "apple-touch-icon.png",
       "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "brand-mark.png",
+      "sizes": "1254x1254",
       "type": "image/png",
       "purpose": "any"
     }

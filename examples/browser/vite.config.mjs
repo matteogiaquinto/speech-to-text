@@ -13,6 +13,14 @@ export default {
       "@matteogiaquinto/speech-to-text": resolve("src/index.ts"),
     },
   },
+  build: {
+    rollupOptions: {
+      input: {
+        main: resolve("examples/browser/index.html"),
+        docs: resolve("examples/browser/docs/index.html"),
+      },
+    },
+  },
   server: { headers },
   preview: { headers },
 };

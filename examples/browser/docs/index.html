@@ -1,0 +1,539 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Documentation for @matteogiaquinto/speech-to-text, a small browser package for private, local Whisper dictation."
+    />
+    <meta name="theme-color" content="#070712" />
+    <link rel="icon" href="/speech-to-text-mark.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32x32.png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <title>Documentation · speech-to-text</title>
+  </head>
+  <body>
+    <header class="docs-header">
+      <a class="brand" href="../" aria-label="speech-to-text home">
+        <img
+          class="brand-mark"
+          src="/speech-to-text-mark.svg"
+          alt=""
+          width="30"
+          height="30"
+        />
+        <span>speech-to-text</span>
+        <span class="brand-divider" aria-hidden="true"></span>
+        <span class="brand-section">Docs</span>
+      </a>
+
+      <button
+        class="menu-button"
+        id="menu-button"
+        type="button"
+        aria-label="Open documentation menu"
+        aria-expanded="false"
+        aria-controls="docs-sidebar"
+      >
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav class="header-links" aria-label="Project links">
+        <a href="../">Demo</a>
+        <a href="https://www.npmjs.com/package/@matteogiaquinto/speech-to-text"
+          >npm</a
+        >
+        <a
+          class="github-button"
+          href="https://github.com/matteogiaquinto/speech-to-text"
+          >GitHub <span aria-hidden="true">↗</span></a
+        >
+      </nav>
+    </header>
+
+    <div class="docs-shell">
+      <aside class="docs-sidebar" id="docs-sidebar">
+        <nav aria-label="Documentation navigation">
+          <div class="sidebar-group">
+            <p>Get started</p>
+            <a class="active" href="#introduction">Introduction</a>
+            <a href="#installation">Installation</a>
+            <a href="#quick-start">Quick start</a>
+          </div>
+          <div class="sidebar-group">
+            <p>Core concepts</p>
+            <a href="#lifecycle">Lifecycle</a>
+            <a href="#status-updates">Status updates</a>
+            <a href="#models">Models & languages</a>
+            <a href="#model-cache">Model cache</a>
+          </div>
+          <div class="sidebar-group">
+            <p>Build your UI</p>
+            <a href="#voice-control">Voice control</a>
+            <a href="#insert-transcript">Insert transcripts</a>
+            <a href="#cleanup">Cleanup</a>
+          </div>
+          <div class="sidebar-group">
+            <p>Reference</p>
+            <a href="#api">API reference</a>
+            <a href="#errors">Errors</a>
+            <a href="#browser-requirements">Browser requirements</a>
+          </div>
+        </nav>
+        <div class="sidebar-footer">
+          <span>Open source · MIT</span>
+          <a href="https://github.com/matteogiaquinto/speech-to-text/issues"
+            >Report an issue ↗</a
+          >
+        </div>
+      </aside>
+
+      <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
+      <main class="docs-content">
+        <article>
+          <section id="introduction" class="doc-section doc-intro">
+            <p class="eyebrow">Get started</p>
+            <h1>Browser speech-to-text, without the backend.</h1>
+            <p class="lead">
+              Add private Whisper dictation to any input, textarea, or command
+              bar. Audio and transcription stay in the browser.
+            </p>
+            <div class="callout callout-note">
+              <span class="callout-icon" aria-hidden="true">✦</span>
+              <div>
+                <strong>Framework agnostic</strong>
+                <p>
+                  The package exposes a small TypeScript API and leaves the UI
+                  to your application.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <section id="installation" class="doc-section">
+            <div class="section-heading">
+              <p class="eyebrow">01</p>
+              <h2>Installation</h2>
+            </div>
+            <p>
+              Install the package with the package manager your project uses.
+            </p>
+            <div class="code-block">
+              <div class="code-label">Terminal</div>
+              <pre><code><span class="token-muted">$</span> pnpm add @matteogiaquinto/speech-to-text</code></pre>
+              <button
+                class="copy-button"
+                type="button"
+                data-copy="pnpm add @matteogiaquinto/speech-to-text"
+              >
+                Copy
+              </button>
+            </div>
+            <p class="fine-print">
+              This package is browser-only at runtime, but importing it from an
+              SSR build is safe. Browser APIs are accessed only when lifecycle
+              methods run.
+            </p>
+          </section>
+
+          <section id="quick-start" class="doc-section">
+            <div class="section-heading">
+              <p class="eyebrow">02</p>
+              <h2>Quick start</h2>
+            </div>
+            <p>
+              Create one long-lived instance, prepare the model after explicit
+              user intent, then start and stop recording.
+            </p>
+            <div class="code-block">
+              <div class="code-label">TypeScript</div>
+              <pre><code><span class="token-purple">import</span> { createSpeechToText } <span class="token-purple">from</span> <span class="token-green">"@matteogiaquinto/speech-to-text"</span>;
+
+<span class="token-purple">const</span> speech = <span class="token-blue">createSpeechToText</span>({
+  language: <span class="token-green">"fr"</span>,
+  model: <span class="token-green">"whisper-base"</span>,
+});
+
+<span class="token-purple">await</span> speech.<span class="token-blue">prepare</span>();
+<span class="token-purple">await</span> speech.<span class="token-blue">start</span>();
+
+<span class="token-comment">// The user speaks.</span>
+<span class="token-purple">const</span> text = <span class="token-purple">await</span> speech.<span class="token-blue">stop</span>();
+
+console.<span class="token-blue">log</span>(text);
+speech.<span class="token-blue">dispose</span>();</code></pre>
+              <button
+                class="copy-button"
+                type="button"
+                data-copy-target="quick-start-code"
+              >
+                Copy
+              </button>
+            </div>
+            <template id="quick-start-code"
+              >import { createSpeechToText } from
+              "@matteogiaquinto/speech-to-text"; const speech =
+              createSpeechToText({ language: "fr", model: "whisper-base", });
+              await speech.prepare(); await speech.start(); // The user speaks.
+              const text = await speech.stop(); console.log(text);
+              speech.dispose();</template
+            >
+          </section>
+
+          <section id="lifecycle" class="doc-section">
+            <div class="section-heading">
+              <p class="eyebrow">Core concepts</p>
+              <h2>A predictable lifecycle</h2>
+            </div>
+            <div class="lifecycle-grid">
+              <div class="lifecycle-card">
+                <span>1</span>
+                <h3>Prepare</h3>
+                <p>
+                  Download or restore the model without opening the microphone.
+                </p>
+                <code>speech.prepare()</code>
+              </div>
+              <div class="lifecycle-card">
+                <span>2</span>
+                <h3>Record</h3>
+                <p>Request microphone access and begin a new recording.</p>
+                <code>speech.start()</code>
+              </div>
+              <div class="lifecycle-card">
+                <span>3</span>
+                <h3>Transcribe</h3>
+                <p>
+                  Stop capture, run Whisper locally, and receive plain text.
+                </p>
+                <code>speech.stop()</code>
+              </div>
+            </div>
+          </section>
+
+          <section id="status-updates" class="doc-section">
+            <div class="section-heading">
+              <h2>Status updates</h2>
+            </div>
+            <p>
+              Use <code>onStatus</code> to map the runtime lifecycle to your own
+              loading, recording, and error UI.
+            </p>
+            <div class="code-block">
+              <div class="code-label">TypeScript</div>
+              <pre><code><span class="token-purple">const</span> speech = <span class="token-blue">createSpeechToText</span>({
+  onStatus(status) {
+    <span class="token-comment">// idle | loading | ready | recording</span>
+    <span class="token-comment">// transcribing | error</span>
+    <span class="token-blue">renderVoiceState</span>(status);
+  },
+});</code></pre>
+            </div>
+            <div class="status-row" aria-label="Available status values">
+              <code>idle</code><code>loading</code><code>ready</code>
+              <code>recording</code><code>transcribing</code><code>error</code>
+            </div>
+          </section>
+
+          <section id="models" class="doc-section">
+            <div class="section-heading">
+              <h2>Models & languages</h2>
+            </div>
+            <p>
+              French and <code>whisper-base</code> are the defaults. Choose a
+              model once when creating the instance; recreate it only when the
+              user intentionally changes models.
+            </p>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Model</th>
+                    <th>Speed</th>
+                    <th>Accuracy</th>
+                    <th>Best for</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>whisper-tiny</code></td>
+                    <td>Fastest</td>
+                    <td>Lower</td>
+                    <td>Lightweight dictation</td>
+                  </tr>
+                  <tr>
+                    <td><code>whisper-base</code></td>
+                    <td>Fast</td>
+                    <td>Good</td>
+                    <td>Balanced default</td>
+                  </tr>
+                  <tr>
+                    <td><code>whisper-small</code></td>
+                    <td>Slower</td>
+                    <td>Better</td>
+                    <td>Higher-quality short dictation</td>
+                  </tr>
+                  <tr>
+                    <td><code>whisper-large-v3-turbo</code></td>
+                    <td>Heavier</td>
+                    <td>Higher</td>
+                    <td>Powerful devices</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="model-cache" class="doc-section">
+            <div class="section-heading">
+              <h2>Model cache</h2>
+            </div>
+            <p>
+              Model files are stored in browser origin-private storage and are
+              normally reused on later visits.
+            </p>
+            <div class="formula">
+              <span>browser profile</span><b>+</b><span>site origin</span
+              ><b>=</b><span>model cache</span>
+            </div>
+            <div class="callout callout-warning">
+              <span class="callout-icon" aria-hidden="true">i</span>
+              <div>
+                <strong>Cache scope matters</strong>
+                <p>
+                  Private browsing, another origin or profile, cleared site
+                  data, or a different device may require another download.
+                  <code>dispose()</code> does not clear cached model files.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <section id="voice-control" class="doc-section">
+            <div class="section-heading">
+              <p class="eyebrow">Build your UI</p>
+              <h2>The voice control</h2>
+            </div>
+            <p>
+              Keep the microphone compact at rest. While recording, expand it
+              left into a capsule with elapsed time, waveform feedback, and a
+              stop square.
+            </p>
+            <div class="voice-specimen">
+              <div class="specimen-state">
+                <span class="specimen-label">Idle</span>
+                <span class="mini-mic" aria-hidden="true">
+                  <svg viewBox="0 0 24 24">
+                    <rect x="9" y="3" width="6" height="11" rx="3"></rect>
+                    <path d="M6 10.5a6 6 0 0 0 12 0M12 16.5V21M9 21h6"></path>
+                  </svg>
+                </span>
+              </div>
+              <div class="specimen-arrow" aria-hidden="true">→</div>
+              <div class="specimen-state">
+                <span class="specimen-label">Recording</span>
+                <span class="mini-recording" aria-hidden="true">
+                  <i></i><i></i><i></i><i></i><i></i> <em>0:07</em><b></b>
+                </span>
+              </div>
+            </div>
+            <ul class="check-list">
+              <li>Short tap starts and latches; a second tap stops.</li>
+              <li>Hold for about 300 ms enables push-to-talk.</li>
+              <li>Slide left about 64 px while held to cancel.</li>
+              <li>
+                <kbd>Enter</kbd> / <kbd>Space</kbd> toggles;
+                <kbd>Escape</kbd> cancels.
+              </li>
+              <li>
+                Expose Start/Stop dictation labels and synchronized
+                <code>aria-pressed</code>.
+              </li>
+            </ul>
+            <a
+              class="text-link"
+              href="https://github.com/matteogiaquinto/speech-to-text/blob/main/docs/VOICE-UI.md"
+              >Read the complete Voice UI specification
+              <span aria-hidden="true">→</span></a
+            >
+          </section>
+
+          <section id="insert-transcript" class="doc-section">
+            <div class="section-heading">
+              <h2>Insert transcripts safely</h2>
+            </div>
+            <p>
+              Preserve existing text. Insert at the selection when practical, or
+              append using exactly one separating space. Controlled fields
+              should always use the framework's state update mechanism.
+            </p>
+            <div class="code-block">
+              <div class="code-label">TypeScript</div>
+              <pre><code><span class="token-purple">const</span> text = <span class="token-purple">await</span> speech.<span class="token-blue">stop</span>();
+
+<span class="token-purple">const</span> nextValue = currentValue.trim()
+  ? <span class="token-green">`${currentValue.trimEnd()} ${text}`</span>
+  : text;
+
+<span class="token-blue">setValue</span>(nextValue);</code></pre>
+            </div>
+          </section>
+
+          <section id="cleanup" class="doc-section">
+            <div class="section-heading">
+              <h2>Cleanup</h2>
+            </div>
+            <p>
+              Reuse the same instance across successful recordings. Dispose it
+              only when the owning feature permanently unmounts.
+            </p>
+            <div class="code-block">
+              <div class="code-label">Example</div>
+              <pre><code><span class="token-purple">return</span> () => {
+  speech.<span class="token-blue">dispose</span>();
+};</code></pre>
+            </div>
+          </section>
+
+          <section id="api" class="doc-section">
+            <div class="section-heading">
+              <p class="eyebrow">Reference</p>
+              <h2>API reference</h2>
+            </div>
+            <div class="api-list">
+              <div class="api-item">
+                <div>
+                  <code>createSpeechToText(options?)</code
+                  ><span class="return-type">SpeechToText</span>
+                </div>
+                <p>Creates an isolated speech-to-text instance.</p>
+                <dl>
+                  <div>
+                    <dt><code>language?: string</code></dt>
+                    <dd>BCP-47 language code. Default: <code>"fr"</code>.</dd>
+                  </div>
+                  <div>
+                    <dt><code>model?: ASRModel</code></dt>
+                    <dd>
+                      Whisper model. Default: <code>"whisper-base"</code>.
+                    </dd>
+                  </div>
+                  <div>
+                    <dt><code>onStatus?: (status) =&gt; void</code></dt>
+                    <dd>Receives coarse lifecycle updates.</dd>
+                  </div>
+                </dl>
+              </div>
+              <div class="api-item">
+                <div>
+                  <code>prepare()</code
+                  ><span class="return-type">Promise&lt;void&gt;</span>
+                </div>
+                <p>
+                  Downloads or initializes the selected model without opening
+                  the microphone.
+                </p>
+              </div>
+              <div class="api-item">
+                <div>
+                  <code>start()</code
+                  ><span class="return-type">Promise&lt;void&gt;</span>
+                </div>
+                <p>Requests microphone access and begins a recording.</p>
+              </div>
+              <div class="api-item">
+                <div>
+                  <code>stop()</code
+                  ><span class="return-type">Promise&lt;string&gt;</span>
+                </div>
+                <p>
+                  Stops capture, transcribes locally, and returns trimmed plain
+                  text.
+                </p>
+              </div>
+              <div class="api-item">
+                <div>
+                  <code>dispose()</code><span class="return-type">void</span>
+                </div>
+                <p>
+                  Stops tracks, cancels in-flight transcription, and releases
+                  runtime resources.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <section id="errors" class="doc-section">
+            <div class="section-heading"><h2>Errors</h2></div>
+            <p>
+              Failures are exposed as <code>SpeechToTextError</code>,
+              <code>MicrophoneError</code>, or <code>TranscriptionError</code>.
+              The original error is available through <code>cause</code>.
+            </p>
+            <div class="callout callout-note">
+              <span class="callout-icon" aria-hidden="true">!</span>
+              <div>
+                <strong>Keep typing available</strong>
+                <p>
+                  Return to the compact microphone and use your product's normal
+                  non-blocking error UI.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <section id="browser-requirements" class="doc-section">
+            <div class="section-heading"><h2>Browser requirements</h2></div>
+            <p>
+              Production microphone access requires HTTPS. Localhost is a secure
+              context for local development. Runtime support inherits the
+              WebGPU, WebCodecs, and WASM constraints of
+              <code>browser-whisper</code>.
+            </p>
+            <p>
+              Threaded WASM can require cross-origin isolation. Add these
+              headers only when your deployment needs that fallback, and test
+              all third-party resources afterward.
+            </p>
+            <div class="code-block">
+              <div class="code-label">HTTP headers</div>
+              <pre><code>Cross-Origin-Embedder-Policy: require-corp
+Cross-Origin-Opener-Policy: same-origin</code></pre>
+            </div>
+          </section>
+
+          <footer class="docs-footer">
+            <div>
+              <strong>Ready to add dictation?</strong>
+              <p>Try the real browser integration before you build.</p>
+            </div>
+            <a href="../"
+              >Open the live demo <span aria-hidden="true">→</span></a
+            >
+          </footer>
+        </article>
+
+        <aside class="page-toc" aria-label="On this page">
+          <p>On this page</p>
+          <a class="active" href="#introduction">Introduction</a>
+          <a href="#installation">Installation</a>
+          <a href="#quick-start">Quick start</a>
+          <a href="#lifecycle">Lifecycle</a>
+          <a href="#models">Models</a>
+          <a href="#voice-control">Voice control</a>
+          <a href="#api">API reference</a>
+          <a href="#browser-requirements">Browser requirements</a>
+          <a
+            class="toc-edit"
+            href="https://github.com/matteogiaquinto/speech-to-text/edit/main/examples/browser/docs/index.html"
+            >Edit this page ↗</a
+          >
+        </aside>
+      </main>
+    </div>
+
+    <script type="module" src="../src/docs.ts"></script>
+  </body>
+</html>

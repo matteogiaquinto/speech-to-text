@@ -12,8 +12,7 @@
       rel="canonical"
       href="https://matteogiaquinto.github.io/speech-to-text/"
     />
-    <link rel="icon" href="/speech-to-text-mark.svg" type="image/svg+xml" />
-    <link rel="icon" href="/favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" href="/favicon-32x32.png" sizes="32x32" type="image/png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
     <meta property="og:title" content="Local speech-to-text for web apps" />
@@ -47,7 +46,7 @@
         "description": "Private, local Whisper dictation for any web input.",
         "url": "https://matteogiaquinto.github.io/speech-to-text/",
         "image": "https://matteogiaquinto.github.io/speech-to-text/social-preview.png",
-        "logo": "https://matteogiaquinto.github.io/speech-to-text/speech-to-text-mark.svg",
+        "logo": "https://matteogiaquinto.github.io/speech-to-text/brand-mark.png",
         "applicationCategory": "DeveloperApplication",
         "operatingSystem": "Web",
         "isAccessibleForFree": true,
@@ -57,7 +56,16 @@
     <title>Speech-to-text for any web input</title>
   </head>
   <body>
-    <main class="page-shell">
+    <main
+      class="page-shell click-spark"
+      data-click-spark-color="#ffffff"
+      data-click-spark-size="10"
+      data-click-spark-radius="10"
+      data-click-spark-count="6"
+      data-click-spark-duration="300"
+      data-click-spark-extra-scale="2"
+    >
+      <canvas class="click-spark__canvas" aria-hidden="true"></canvas>
       <nav class="topbar" aria-label="Project links">
         <a
           class="brand"
@@ -65,7 +73,7 @@
         >
           <img
             class="brand-mark"
-            src="/speech-to-text-mark.svg"
+            src="/brand-mark.png"
             alt=""
             width="32"
             height="32"
@@ -73,9 +81,7 @@
           <span>speech-to-text</span>
         </a>
         <div class="nav-links">
-          <a href="https://github.com/matteogiaquinto/speech-to-text#readme"
-            >Docs</a
-          >
+          <a href="./docs/">Docs</a>
           <a
             href="https://github.com/matteogiaquinto/speech-to-text/blob/main/docs/VOICE-UI.md"
             >Voice UI</a
@@ -108,7 +114,10 @@
           Free forever · MIT
           <span aria-hidden="true">→</span>
         </a>
-        <h1>Speech-to-text for any web input.</h1>
+        <h1>
+          Speech-to-text
+          <span class="shimmer-text">for any web input</span>
+        </h1>
         <p class="hero-copy">
           Add private dictation without a backend, API key, or audio upload.
           Everything runs locally in your browser.
@@ -125,31 +134,8 @@
             ></textarea>
 
             <div class="prompt-toolbar">
-              <label class="prompt-picker">
-                <span class="sr-only">Language</span>
-                <select id="language" aria-label="Language">
-                  <option value="fr" selected>French</option>
-                  <option value="en">English</option>
-                  <option value="de">German</option>
-                  <option value="it">Italian</option>
-                  <option value="es">Spanish</option>
-                </select>
-                <svg viewBox="0 0 16 16" aria-hidden="true">
-                  <path d="m5 6 3 3 3-3" />
-                </svg>
-              </label>
-
-              <label class="prompt-picker">
-                <span class="sr-only">Whisper model</span>
-                <select id="model" aria-label="Whisper model">
-                  <option value="whisper-tiny">Tiny</option>
-                  <option value="whisper-base" selected>Base</option>
-                  <option value="whisper-small">Small</option>
-                </select>
-                <svg viewBox="0 0 16 16" aria-hidden="true">
-                  <path d="m5 6 3 3 3-3" />
-                </svg>
-              </label>
+              <div id="language" aria-label="Language"></div>
+              <div id="model" aria-label="Whisper model"></div>
 
               <span class="prompt-spacer"></span>
 
@@ -191,6 +177,23 @@
                   <span class="voice-pill__spinner"></span>
                 </span>
               </button>
+
+              <span class="voice-callout" aria-hidden="true">
+                <svg viewBox="0 0 108 88">
+                  <path
+                    class="voice-callout__arrow voice-callout__arrow--top"
+                    d="M101 5C72 4 50 12 14 30m0 0 8-10m-8 10 13 2"
+                  />
+                  <path
+                    class="voice-callout__arrow voice-callout__arrow--middle"
+                    d="M104 43C72 42 47 44 14 46m0 0 10-8m-10 8 11 7"
+                  />
+                  <path
+                    class="voice-callout__arrow voice-callout__arrow--bottom"
+                    d="M98 83C72 76 48 69 14 62m0 0 13-4m-13 4 9 10"
+                  />
+                </svg>
+              </span>
             </div>
           </div>
 

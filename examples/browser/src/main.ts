@@ -3,6 +3,7 @@ import {
   type SpeechToText,
   type SpeechToTextStatus,
 } from "@matteogiaquinto/speech-to-text";
+import { GlideSelect } from "./glide-select";
 import "./style.css";
 
 type DemoModel = "whisper-tiny" | "whisper-base" | "whisper-small";
@@ -30,6 +31,99 @@ type EaseState = {
   to: number;
   start: number;
 };
+
+type ClickSpark = {
+  x: number;
+  y: number;
+  angle: number;
+  startTime: number;
+};
+
+function initClickSpark() {
+  const container = document.querySelector<HTMLElement>("[data-click-spark-color]");
+  const canvas = container?.querySelector<HTMLCanvasElement>(
+    ".click-spark__canvas",
+  );
+  if (!container || !canvas) return;
+
+  const context = canvas.getContext("2d");
+  if (!context) return;
+
+  const color = container.dataset.clickSparkColor ?? "#ffffff";
+  const sparkSize = Number(container.dataset.clickSparkSize ?? 10);
+  const sparkRadius = Number(container.dataset.clickSparkRadius ?? 10);
+  const sparkCount = Number(container.dataset.clickSparkCount ?? 6);
+  const duration = Number(container.dataset.clickSparkDuration ?? 300);
+  const extraScale = Number(container.dataset.clickSparkExtraScale ?? 2);
+  const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+  const sparks: ClickSpark[] = [];
+  let animationFrame = 0;
+  let deviceScale = 1;
+
+  function resize() {
+    const bounds = container.getBoundingClientRect();
+    deviceScale = Math.min(devicePixelRatio || 1, 2);
+    canvas.width = Math.round(bounds.width * deviceScale);
+    canvas.height = Math.round(bounds.height * deviceScale);
+    context.setTransform(deviceScale, 0, 0, deviceScale, 0, 0);
+  }
+
+  function draw(timestamp: number) {
+    const bounds = container.getBoundingClientRect();
+    context.clearRect(0, 0, bounds.width, bounds.height);
+
+    for (let index = sparks.length - 1; index >= 0; index -= 1) {
+      const spark = sparks[index];
+      const elapsed = timestamp - spark.startTime;
+      if (elapsed >= duration) {
+        sparks.splice(index, 1);
+        continue;
+      }
+
+      const progress = elapsed / duration;
+      const eased = progress * (2 - progress);
+      const distance = eased * sparkRadius * extraScale;
+      const lineLength = sparkSize * (1 - eased);
+      const cosine = Math.cos(spark.angle);
+      const sine = Math.sin(spark.angle);
+
+      context.globalAlpha = 1 - progress;
+      context.strokeStyle = color;
+      context.lineWidth = 2;
+      context.beginPath();
+      context.moveTo(spark.x + distance * cosine, spark.y + distance * sine);
+      context.lineTo(
+        spark.x + (distance + lineLength) * cosine,
+        spark.y + (distance + lineLength) * sine,
+      );
+      context.stroke();
+    }
+    context.globalAlpha = 1;
+
+    if (sparks.length) animationFrame = requestAnimationFrame(draw);
+    else animationFrame = 0;
+  }
+
+  container.addEventListener("click", (event) => {
+    if (reducedMotion.matches) return;
+
+    const bounds = container.getBoundingClientRect();
+    const now = performance.now();
+    for (let index = 0; index < sparkCount; index += 1) {
+      sparks.push({
+        x: event.clientX - bounds.left,
+        y: event.clientY - bounds.top,
+        angle: (Math.PI * 2 * index) / sparkCount,
+        startTime: now,
+      });
+    }
+
+    if (!animationFrame) animationFrame = requestAnimationFrame(draw);
+  });
+
+  new ResizeObserver(resize).observe(container);
+  resize();
+}
 
 function initInteractiveDotsGridBackground() {
   const elements = document.querySelectorAll<HTMLElement>(
@@ -294,13 +388,53 @@ function initInteractiveDotsGridBackground() {
   resize();
 }
 
+function initPromptComposerBorderGlow() {
+  const composer = document.querySelector<HTMLElement>(".prompt-composer");
+  if (!composer) return;
+
+  const supportsHover = matchMedia("(hover: hover) and (pointer: fine)");
+  const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+
+  function resetGlow() {
+    composer.style.setProperty("--border-glow-proximity", "0");
+  }
+
+  composer.addEventListener("pointermove", (event) => {
+    if (!supportsHover.matches || reducedMotion.matches) return;
+
+    const bounds = composer.getBoundingClientRect();
+    const x = event.clientX - bounds.left;
+    const y = event.clientY - bounds.top;
+    const centerX = bounds.width / 2;
+    const centerY = bounds.height / 2;
+    const distanceFromEdge = Math.min(
+      x,
+      y,
+      bounds.width - x,
+      bounds.height - y,
+    );
+    const proximity = Math.max(
+      0,
+      Math.min(100, (1 - distanceFromEdge / 42) * 100),
+    );
+    const angle = Math.atan2(y - centerY, x - centerX) * (180 / Math.PI) + 90;
+
+    composer.style.setProperty("--border-glow-proximity", proximity.toFixed(2));
+    composer.style.setProperty("--border-glow-angle", `${angle.toFixed(2)}deg`);
+  });
+
+  composer.addEventListener("pointerleave", resetGlow);
+  supportsHover.addEventListener("change", resetGlow);
+  reducedMotion.addEventListener("change", resetGlow);
+}
+
 const input = document.querySelector<HTMLTextAreaElement>("#speech-input");
 const microphone = document.querySelector<HTMLButtonElement>("#microphone");
 const statusPill = document.querySelector<HTMLElement>("#status-pill");
 const statusText = document.querySelector<HTMLElement>("#status-text");
 const hint = document.querySelector<HTMLElement>("#hint");
-const language = document.querySelector<HTMLSelectElement>("#language");
-const model = document.querySelector<HTMLSelectElement>("#model");
+const languageRoot = document.querySelector<HTMLElement>("#language");
+const modelRoot = document.querySelector<HTMLElement>("#model");
 const copyInstall = document.querySelector<HTMLButtonElement>("#copy-install");
 const voiceTime = document.querySelector<HTMLElement>("#voice-time");
 const voiceWave = document.querySelector<HTMLCanvasElement>("#voice-wave");
@@ -311,14 +445,37 @@ if (
   !statusPill ||
   !statusText ||
   !hint ||
-  !language ||
-  !model ||
+  !languageRoot ||
+  !modelRoot ||
   !copyInstall ||
   !voiceTime ||
   !voiceWave
 ) {
   throw new Error("The demo page is missing required elements.");
 }
+
+const language = new GlideSelect(languageRoot, {
+  ariaLabel: "Language",
+  value: "fr",
+  options: [
+    { value: "fr", label: "French" },
+    { value: "en", label: "English" },
+    { value: "de", label: "German" },
+    { value: "it", label: "Italian" },
+    { value: "es", label: "Spanish" },
+  ],
+  onChange: () => resetEngine(),
+});
+const model = new GlideSelect(modelRoot, {
+  ariaLabel: "Whisper model",
+  value: "whisper-base",
+  options: [
+    { value: "whisper-tiny", label: "Tiny", tag: "Fast" },
+    { value: "whisper-base", label: "Base", tag: "Balanced" },
+    { value: "whisper-small", label: "Small", tag: "Accurate" },
+  ],
+  onChange: () => resetEngine(),
+});
 
 let prepared = false;
 let currentStatus: SpeechToTextStatus = "idle";
@@ -462,8 +619,8 @@ function renderStatus(status: SpeechToTextStatus) {
   );
   microphone.title = isRecording ? "Stop dictation" : "Start dictation";
 
-  language.disabled = busy || isRecording;
-  model.disabled = busy || isRecording;
+  language.setDisabled(busy || isRecording);
+  model.setDisabled(busy || isRecording);
 
   if (isRecording && previousStatus !== "recording") startVoiceAnimation();
   if (!isRecording && previousStatus === "recording") stopVoiceAnimation();
@@ -471,8 +628,8 @@ function renderStatus(status: SpeechToTextStatus) {
 
 function createEngine(): SpeechToText {
   return createSpeechToText({
-    language: language.value,
-    model: model.value as DemoModel,
+    language: language.getValue(),
+    model: model.getValue() as DemoModel,
     onStatus: renderStatus,
   });
 }
@@ -615,7 +772,9 @@ function updateSlide(clientX: number) {
   if (progress >= 1) cancelRecording();
 }
 
+initClickSpark();
 initInteractiveDotsGridBackground();
+initPromptComposerBorderGlow();
 speech = createEngine();
 renderStatus("idle");
 autoGrowInput();
@@ -710,9 +869,6 @@ microphone.addEventListener("keydown", (event) => {
     else void startRecording();
   }
 });
-
-language.addEventListener("change", resetEngine);
-model.addEventListener("change", resetEngine);
 
 copyInstall.addEventListener("click", async () => {
   const command = "pnpm add @matteogiaquinto/speech-to-text";

@@ -74,8 +74,18 @@ a {
 }
 
 .page-shell {
+  position: relative;
   width: 100%;
   margin: 0 auto;
+}
+
+.click-spark__canvas {
+  position: absolute;
+  z-index: 10;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
 }
 
 .topbar {
@@ -222,7 +232,25 @@ footer a:hover {
   font-size: clamp(52px, 6vw, 76px);
   font-weight: 500;
   line-height: 0.94;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.025em;
+}
+
+.shimmer-text {
+  display: block;
+  padding-bottom: 0.1em;
+  margin-bottom: -0.1em;
+  color: transparent;
+  background-color: rgba(255, 255, 255, 0.35);
+  background-image: linear-gradient(
+    120deg,
+    transparent 40%,
+    #ffffff 50%,
+    transparent 60%
+  );
+  background-size: 200% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  animation: shimmer 4s linear infinite;
 }
 
 .hero-copy {
@@ -291,6 +319,9 @@ footer a:hover {
 }
 
 .prompt-composer {
+  --border-glow-proximity: 0;
+  --border-glow-angle: 45deg;
+
   position: relative;
   isolation: isolate;
   display: flex;
@@ -308,6 +339,62 @@ footer a:hover {
   transition:
     border-color 180ms ease,
     box-shadow 180ms ease;
+}
+
+.prompt-composer::before,
+.prompt-composer::after {
+  position: absolute;
+  inset: -1px;
+  z-index: 0;
+  border-radius: inherit;
+  content: "";
+  opacity: calc(var(--border-glow-proximity) / 100);
+  pointer-events: none;
+  transition: opacity 180ms ease;
+}
+
+/* A directional, edge-only accent that follows a mouse near the composer. */
+.prompt-composer::before {
+  padding: 1px;
+  background: conic-gradient(
+    from var(--border-glow-angle) at center,
+    #7f8cff,
+    #f8f5ef 11%,
+    #0057ff 18%,
+    transparent 28%,
+    transparent 72%,
+    #7f8cff 82%,
+    #f8f5ef 89%,
+    #0057ff
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+.prompt-composer::after {
+  inset: -10px;
+  border-radius: calc(16px + 10px);
+  background: conic-gradient(
+    from var(--border-glow-angle) at center,
+    rgba(127, 140, 255, 0.42),
+    rgba(248, 245, 239, 0.24) 11%,
+    rgba(0, 87, 255, 0.32) 18%,
+    transparent 29%,
+    transparent 71%,
+    rgba(127, 140, 255, 0.42) 82%,
+    rgba(248, 245, 239, 0.24) 89%,
+    rgba(0, 87, 255, 0.32)
+  );
+  filter: blur(10px);
+  opacity: calc(var(--border-glow-proximity) / 260);
+}
+
+.prompt-composer > * {
+  position: relative;
+  z-index: 1;
 }
 
 .prompt-composer:focus-within {
@@ -349,60 +436,12 @@ footer a:hover {
   flex: 1 1 auto;
 }
 
-.prompt-picker {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  height: 28px;
-  border-radius: 8px;
-  color: rgba(245, 245, 245, 0.7);
-  transition:
-    color 150ms ease,
-    background-color 150ms ease;
-}
-
-.prompt-picker:hover {
-  background: rgba(245, 245, 245, 0.07);
-  color: #f5f5f5;
-}
-
-.prompt-picker select {
-  height: 28px;
-  padding: 0 24px 0 8px;
-  border: 0;
-  outline: none;
-  appearance: none;
-  background: transparent;
-  color: inherit;
-  font-size: 12px;
-  font-weight: 500;
-  cursor: pointer;
-}
-
-.prompt-picker select:disabled {
-  cursor: default;
-  opacity: 0.45;
-}
-
-.prompt-picker svg {
-  position: absolute;
-  right: 7px;
-  width: 12px;
-  height: 12px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.6;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  pointer-events: none;
-}
-
 .voice-pill {
   --voice-accent: #f5f5f5;
   --voice-icon: #a1a1aa;
   --voice-bg: #323236;
-  --voice-size: 28px;
-  --voice-radius: 14px;
+  --voice-size: 56px;
+  --voice-radius: 28px;
   --voice-extra: 112px;
   --voice-clock: 38px;
   --voice-wave: 66px;
@@ -415,7 +454,7 @@ footer a:hover {
   flex: none;
   width: var(--voice-size);
   height: var(--voice-size);
-  margin: 0 2px 0 4px;
+  margin: -28px 2px 0 4px;
   padding: 0;
   place-items: center;
   isolation: isolate;
@@ -564,8 +603,8 @@ footer a:hover {
 }
 
 .voice-pill__mic {
-  width: 15px;
-  height: 15px;
+  width: 24px;
+  height: 24px;
   fill: none;
   stroke: currentColor;
   stroke-width: 1.9;
@@ -578,9 +617,9 @@ footer a:hover {
 }
 
 .voice-pill__stop {
-  width: 9px;
-  height: 9px;
-  border-radius: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
   background: currentColor;
   opacity: 0;
   filter: blur(2px);
@@ -593,8 +632,8 @@ footer a:hover {
 
 .voice-pill__spinner {
   display: none;
-  width: 14px;
-  height: 14px;
+  width: 22px;
+  height: 22px;
   border: 2px solid rgba(245, 245, 245, 0.18);
   border-top-color: #f5f5f5;
   border-radius: 50%;
@@ -631,6 +670,34 @@ footer a:hover {
 .voice-pill[data-sliding] .voice-pill__wave,
 .voice-pill[data-sliding] .voice-pill__glyph {
   transition-property: opacity, filter;
+}
+
+.voice-callout {
+  position: absolute;
+  z-index: 1;
+  right: -116px;
+  bottom: 0;
+  width: 108px;
+  height: 88px;
+  color: #ffffff;
+  pointer-events: none;
+}
+
+.voice-callout svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.voice-callout__arrow {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.92;
+  vector-effect: non-scaling-stroke;
 }
 
 .hint {
@@ -773,6 +840,12 @@ footer {
   }
 }
 
+@keyframes shimmer {
+  from {
+    background-position: 200% 0;
+  }
+}
+
 @media (pointer: coarse) {
   .prompt-composer textarea {
     font-size: 16px;
@@ -780,6 +853,11 @@ footer {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .shimmer-text {
+    animation: none;
+    background-position: 50% 0;
+  }
+
   .voice-pill {
     transform: none !important;
     transition: color 150ms ease;
@@ -798,9 +876,30 @@ footer {
     transform: none !important;
     transition-property: opacity;
   }
+
+  .prompt-composer::before,
+  .prompt-composer::after {
+    transition: none;
+  }
+}
+
+@media (max-width: 920px) {
+  .voice-callout {
+    right: -79px;
+    bottom: -16px;
+    width: 84px;
+    height: 68px;
+  }
 }
 
 @media (max-width: 680px) {
+  .voice-callout {
+    right: -69px;
+    bottom: -26px;
+    width: 72px;
+    height: 59px;
+  }
+
   .page-shell {
     width: 100%;
   }
