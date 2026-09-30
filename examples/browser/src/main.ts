@@ -40,7 +40,9 @@ type ClickSpark = {
 };
 
 function initClickSpark() {
-  const container = document.querySelector<HTMLElement>("[data-click-spark-color]");
+  const container = document.querySelector<HTMLElement>(
+    "[data-click-spark-color]",
+  );
   const canvas = container?.querySelector<HTMLCanvasElement>(
     ".click-spark__canvas",
   );

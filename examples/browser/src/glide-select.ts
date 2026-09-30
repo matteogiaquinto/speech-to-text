@@ -76,12 +76,16 @@ export class GlideSelect {
     this.trigger.addEventListener("click", () => this.toggle());
     this.trigger.addEventListener("keydown", (event) => this.onKeyDown(event));
     this.list.addEventListener("pointermove", (event) => {
-      const row = (event.target as HTMLElement).closest<HTMLElement>("[data-index]");
+      const row = (event.target as HTMLElement).closest<HTMLElement>(
+        "[data-index]",
+      );
       if (row) this.setActive(Number(row.dataset.index));
     });
     this.list.addEventListener("pointerleave", () => this.setActive(null));
     this.list.addEventListener("click", (event) => {
-      const row = (event.target as HTMLElement).closest<HTMLElement>("[data-index]");
+      const row = (event.target as HTMLElement).closest<HTMLElement>(
+        "[data-index]",
+      );
       if (row) this.pick(Number(row.dataset.index));
     });
     document.addEventListener("pointerdown", (event) => {
@@ -137,13 +141,21 @@ export class GlideSelect {
   }
 
   private renderValue() {
-    const selected = this.options.findIndex((option) => option.value === this.value);
-    const label = this.trigger.querySelector<HTMLElement>(".glide-select__label");
+    const selected = this.options.findIndex(
+      (option) => option.value === this.value,
+    );
+    const label = this.trigger.querySelector<HTMLElement>(
+      ".glide-select__label",
+    );
     if (label) label.textContent = this.options[selected]?.label ?? "Select…";
-    this.list.querySelectorAll<HTMLElement>(".glide-select__option").forEach((row, index) => {
-      row.setAttribute("aria-selected", String(index === selected));
-      row.querySelector<HTMLElement>(".glide-select__check")?.toggleAttribute("data-on", index === selected);
-    });
+    this.list
+      .querySelectorAll<HTMLElement>(".glide-select__option")
+      .forEach((row, index) => {
+        row.setAttribute("aria-selected", String(index === selected));
+        row
+          .querySelector<HTMLElement>(".glide-select__check")
+          ?.toggleAttribute("data-on", index === selected);
+      });
   }
 
   private toggle() {
@@ -192,7 +204,9 @@ export class GlideSelect {
   }
 
   private updatePill() {
-    const row = this.list.querySelector<HTMLElement>(`[data-index="${this.active}"]`);
+    const row = this.list.querySelector<HTMLElement>(
+      `[data-index="${this.active}"]`,
+    );
     if (!row) {
       this.pill.style.opacity = "0";
       return;
@@ -202,8 +216,14 @@ export class GlideSelect {
   }
 
   private onKeyDown(event: KeyboardEvent) {
-    const selected = Math.max(0, this.options.findIndex((option) => option.value === this.value));
-    if (!this.open && ["Enter", " ", "ArrowDown", "ArrowUp"].includes(event.key)) {
+    const selected = Math.max(
+      0,
+      this.options.findIndex((option) => option.value === this.value),
+    );
+    if (
+      !this.open &&
+      ["Enter", " ", "ArrowDown", "ArrowUp"].includes(event.key)
+    ) {
       event.preventDefault();
       this.openMenu();
       this.setActive(selected);
@@ -220,10 +240,23 @@ export class GlideSelect {
       this.pick(this.active ?? selected);
       return;
     }
-    if (event.key === "ArrowDown" || event.key === "ArrowUp" || event.key === "Home" || event.key === "End") {
+    if (
+      event.key === "ArrowDown" ||
+      event.key === "ArrowUp" ||
+      event.key === "Home" ||
+      event.key === "End"
+    ) {
       event.preventDefault();
       const current = this.active ?? selected;
-      const next = event.key === "Home" ? 0 : event.key === "End" ? this.options.length - 1 : Math.min(this.options.length - 1, Math.max(0, current + (event.key === "ArrowDown" ? 1 : -1)));
+      const next =
+        event.key === "Home"
+          ? 0
+          : event.key === "End"
+            ? this.options.length - 1
+            : Math.min(
+                this.options.length - 1,
+                Math.max(0, current + (event.key === "ArrowDown" ? 1 : -1)),
+              );
       this.setActive(next);
     }
   }
