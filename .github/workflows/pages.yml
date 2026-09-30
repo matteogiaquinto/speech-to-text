@@ -19,7 +19,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     outputs:
-      pages-ready: ${{ steps.pages.outcome }}
+      page-url: ${{ steps.pages.outputs.base_url }}
 
     steps:
       - name: Checkout
@@ -53,7 +53,7 @@ jobs:
           path: examples/browser/dist
 
   deploy:
-    if: needs.build.outputs.pages-ready == 'success'
+    if: needs.build.outputs.page-url != ''
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
