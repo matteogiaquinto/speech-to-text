@@ -15,7 +15,7 @@ Add private, browser-native dictation to any input. No backend, no API key, and 
 
 </div>
 
-![Speech-to-text preview](./docs/preview.svg)
+![Speech-to-text preview](./examples/browser/public/social-preview.png)
 
 ## Install
 
