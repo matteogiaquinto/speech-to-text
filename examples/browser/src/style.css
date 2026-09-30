@@ -113,6 +113,20 @@ footer {
   border-radius: 8px;
 }
 
+.homepage-brand {
+  gap: 11px;
+  font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.025em;
+}
+
+.homepage-brand .brand-mark {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+}
+
 .nav-links {
   position: absolute;
   left: 50%;
@@ -232,23 +246,33 @@ footer a:hover {
 
 .release-pill {
   display: inline-flex;
-  gap: 8px;
+  gap: 7px;
   align-items: center;
-  min-height: 30px;
-  padding: 0 12px 0 5px;
+  min-height: 32px;
+  padding: 4px 11px 4px 5px;
   border-radius: 999px;
-  background: #f8f5ef;
-  color: #181f2d;
+  background: rgb(18 15 23 / 64%);
+  color: rgb(248 245 239 / 78%);
   font-size: 11px;
   font-weight: 650;
+  line-height: 1;
   text-decoration: none;
 }
 
 .release-pill span:first-child {
-  padding: 4px 8px;
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 0 8px;
   border-radius: 999px;
-  background: #0057ff;
+  background: rgb(0 87 255 / 82%);
   color: #ffffff;
+}
+
+.release-pill__text {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
 }
 
 .section-kicker {
@@ -353,19 +377,41 @@ footer a:hover {
 }
 
 .prompt-composer {
-  --border-glow-proximity: 0;
-  --border-glow-angle: 45deg;
+  --edge-proximity: 0;
+  --cursor-angle: 45deg;
+  --edge-sensitivity: 30;
+  --color-sensitivity: calc(var(--edge-sensitivity) + 20);
+  --border-radius: 28px;
+  --glow-padding: 40px;
+  --cone-spread: 25;
+  --fill-opacity: 0.5;
+  --card-bg: #120f17;
+  --glow-color: hsl(40deg 80% 80% / 100%);
+  --glow-color-60: hsl(40deg 80% 80% / 60%);
+  --glow-color-50: hsl(40deg 80% 80% / 50%);
+  --glow-color-40: hsl(40deg 80% 80% / 40%);
+  --glow-color-30: hsl(40deg 80% 80% / 30%);
+  --glow-color-20: hsl(40deg 80% 80% / 20%);
+  --glow-color-10: hsl(40deg 80% 80% / 10%);
+  --gradient-one: radial-gradient(at 80% 55%, #c084fc 0, transparent 50%);
+  --gradient-two: radial-gradient(at 69% 34%, #f472b6 0, transparent 50%);
+  --gradient-three: radial-gradient(at 8% 6%, #38bdf8 0, transparent 50%);
+  --gradient-four: radial-gradient(at 41% 38%, #c084fc 0, transparent 50%);
+  --gradient-five: radial-gradient(at 86% 85%, #f472b6 0, transparent 50%);
+  --gradient-six: radial-gradient(at 82% 18%, #38bdf8 0, transparent 50%);
+  --gradient-seven: radial-gradient(at 51% 4%, #f472b6 0, transparent 50%);
 
   position: relative;
   isolation: isolate;
+  transform: translate3d(0, 0, 0.01px);
   display: flex;
   flex-direction: column;
   gap: 10px;
   min-height: 118px;
   padding: 13px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 16px;
-  background: #27272a;
+  border: 1px solid rgb(255 255 255 / 15%);
+  border-radius: var(--border-radius);
+  background: var(--card-bg);
   box-shadow:
     0 10px 30px -16px rgba(0, 0, 0, 0.5),
     inset 0 1px rgba(255, 255, 255, 0.025);
@@ -376,57 +422,123 @@ footer a:hover {
 }
 
 .prompt-composer::before,
-.prompt-composer::after {
+.prompt-composer::after,
+.prompt-composer > .prompt-composer__edge-light {
+  content: "";
   position: absolute;
-  inset: -1px;
+  inset: 0;
   z-index: 0;
   border-radius: inherit;
-  content: "";
-  opacity: calc(var(--border-glow-proximity) / 100);
-  pointer-events: none;
-  transition: opacity 180ms ease;
+  transition: opacity 250ms ease-out;
 }
 
-/* A directional, edge-only accent that follows a mouse near the composer. */
+.prompt-composer:not(:hover)::before,
+.prompt-composer:not(:hover)::after,
+.prompt-composer:not(:hover) > .prompt-composer__edge-light {
+  opacity: 0;
+  transition: opacity 750ms ease-in-out;
+}
+
 .prompt-composer::before {
-  padding: 1px;
-  background: conic-gradient(
-    from var(--border-glow-angle) at center,
-    #7f8cff,
-    #f8f5ef 11%,
-    #0057ff 18%,
-    transparent 28%,
-    transparent 72%,
-    #7f8cff 82%,
-    #f8f5ef 89%,
-    #0057ff
+  border: 1px solid transparent;
+  background:
+    linear-gradient(var(--card-bg) 0 100%) padding-box,
+    linear-gradient(rgb(255 255 255 / 0%) 0 100%) border-box,
+    var(--gradient-one) border-box,
+    var(--gradient-two) border-box,
+    var(--gradient-three) border-box,
+    var(--gradient-four) border-box,
+    var(--gradient-five) border-box,
+    var(--gradient-six) border-box,
+    var(--gradient-seven) border-box,
+    linear-gradient(#c084fc 0 100%) border-box;
+  opacity: calc(
+    (var(--edge-proximity) - var(--color-sensitivity)) /
+      (100 - var(--color-sensitivity))
   );
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
+  mask-image: conic-gradient(
+    from var(--cursor-angle) at center,
+    black calc(var(--cone-spread) * 1%),
+    transparent calc((var(--cone-spread) + 15) * 1%),
+    transparent calc((100 - var(--cone-spread) - 15) * 1%),
+    black calc((100 - var(--cone-spread)) * 1%)
+  );
 }
 
 .prompt-composer::after {
-  inset: -10px;
-  border-radius: calc(16px + 10px);
-  background: conic-gradient(
-    from var(--border-glow-angle) at center,
-    rgba(127, 140, 255, 0.42),
-    rgba(248, 245, 239, 0.24) 11%,
-    rgba(0, 87, 255, 0.32) 18%,
-    transparent 29%,
-    transparent 71%,
-    rgba(127, 140, 255, 0.42) 82%,
-    rgba(248, 245, 239, 0.24) 89%,
-    rgba(0, 87, 255, 0.32)
+  border: 1px solid transparent;
+  background:
+    var(--gradient-one) padding-box,
+    var(--gradient-two) padding-box,
+    var(--gradient-three) padding-box,
+    var(--gradient-four) padding-box,
+    var(--gradient-five) padding-box,
+    var(--gradient-six) padding-box,
+    var(--gradient-seven) padding-box,
+    linear-gradient(#c084fc 0 100%) padding-box;
+  mask-image:
+    linear-gradient(to bottom, black, black),
+    radial-gradient(ellipse at 50% 50%, black 40%, transparent 65%),
+    radial-gradient(ellipse at 66% 66%, black 5%, transparent 40%),
+    radial-gradient(ellipse at 33% 33%, black 5%, transparent 40%),
+    radial-gradient(ellipse at 66% 33%, black 5%, transparent 40%),
+    radial-gradient(ellipse at 33% 66%, black 5%, transparent 40%),
+    conic-gradient(
+      from var(--cursor-angle) at center,
+      transparent 5%,
+      black 15%,
+      black 85%,
+      transparent 95%
+    );
+  mask-composite: subtract, add, add, add, add, add;
+  opacity: calc(
+    var(--fill-opacity) * (var(--edge-proximity) - var(--color-sensitivity)) /
+      (100 - var(--color-sensitivity))
   );
-  filter: blur(10px);
-  opacity: calc(var(--border-glow-proximity) / 260);
+  mix-blend-mode: soft-light;
 }
 
-.prompt-composer > * {
+.prompt-composer > .prompt-composer__edge-light {
+  inset: calc(var(--glow-padding) * -1);
+  z-index: 2;
+  pointer-events: none;
+  mask-image: conic-gradient(
+    from var(--cursor-angle) at center,
+    black 2.5%,
+    transparent 10%,
+    transparent 90%,
+    black 97.5%
+  );
+  opacity: calc(
+    (var(--edge-proximity) - var(--edge-sensitivity)) /
+      (100 - var(--edge-sensitivity))
+  );
+  mix-blend-mode: plus-lighter;
+}
+
+.prompt-composer > .prompt-composer__edge-light::before {
+  position: absolute;
+  inset: var(--glow-padding);
+  border-radius: inherit;
+  box-shadow:
+    inset 0 0 0 1px var(--glow-color),
+    inset 0 0 1px 0 var(--glow-color-60),
+    inset 0 0 3px 0 var(--glow-color-50),
+    inset 0 0 6px 0 var(--glow-color-40),
+    inset 0 0 15px 0 var(--glow-color-30),
+    inset 0 0 25px 2px var(--glow-color-20),
+    inset 0 0 50px 2px var(--glow-color-10),
+    0 0 1px 0 var(--glow-color-60),
+    0 0 3px 0 var(--glow-color-50),
+    0 0 6px 0 var(--glow-color-40),
+    0 0 15px 0 var(--glow-color-30),
+    0 0 25px 2px var(--glow-color-20),
+    0 0 50px 2px var(--glow-color-10);
+  content: "";
+}
+
+.prompt-composer textarea,
+.prompt-composer .prompt-toolbar {
   position: relative;
   z-index: 1;
 }
@@ -717,12 +829,12 @@ footer a:hover {
 
 .install-card {
   display: flex;
-  gap: 14px;
+  gap: 10px;
   align-items: center;
   justify-content: space-between;
-  max-width: 620px;
+  max-width: 530px;
   margin: 18px auto 0;
-  padding: 10px 10px 10px 16px;
+  padding: 8px 8px 8px 14px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.025);
@@ -730,15 +842,20 @@ footer a:hover {
 }
 
 .install-card > div {
+  display: flex;
+  align-items: center;
   min-width: 0;
+  min-height: 32px;
   overflow-x: auto;
   white-space: nowrap;
 }
 
 .install-card code {
+  display: block;
   color: #d7dce4;
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-  font-size: 13px;
+  font-size: 12px;
+  line-height: 1;
 }
 
 :root[data-theme="light"] {
@@ -780,8 +897,10 @@ footer a:hover {
 }
 
 :root[data-theme="light"] .release-pill {
-  border: 1px solid rgba(23, 25, 35, 0.12);
-  box-shadow: 0 4px 12px rgba(23, 25, 35, 0.08);
+  border: 1px solid rgb(23 25 35 / 10%);
+  background: rgb(255 255 255 / 58%);
+  color: rgb(23 25 35 / 68%);
+  box-shadow: 0 4px 12px rgb(23 25 35 / 5%);
 }
 
 :root[data-theme="light"] .shimmer-text {
@@ -800,11 +919,39 @@ footer a:hover {
 }
 
 :root[data-theme="light"] .prompt-composer {
+  --card-bg: rgba(255, 255, 255, 0.84);
+
   border-color: rgba(23, 25, 35, 0.13);
-  background: rgba(255, 255, 255, 0.84);
+  background: var(--card-bg);
   box-shadow:
     0 12px 30px -18px rgba(23, 25, 35, 0.25),
     inset 0 1px rgba(255, 255, 255, 0.8);
+}
+
+:root[data-theme="light"] .prompt-composer::after,
+:root[data-theme="light"] .prompt-composer > .prompt-composer__edge-light {
+  mix-blend-mode: normal;
+}
+
+:root[data-theme="light"] .prompt-composer::before {
+  opacity: calc(
+    (var(--edge-proximity) - var(--color-sensitivity)) /
+      (100 - var(--color-sensitivity)) / 2
+  );
+}
+
+:root[data-theme="light"] .prompt-composer::after {
+  opacity: calc(
+    var(--fill-opacity) * (var(--edge-proximity) - var(--color-sensitivity)) /
+      (100 - var(--color-sensitivity)) / 2
+  );
+}
+
+:root[data-theme="light"] .prompt-composer > .prompt-composer__edge-light {
+  opacity: calc(
+    (var(--edge-proximity) - var(--edge-sensitivity)) /
+      (100 - var(--edge-sensitivity)) / 2
+  );
 }
 
 :root[data-theme="light"] .prompt-composer:focus-within {
@@ -826,6 +973,20 @@ footer a:hover {
   --voice-accent: #171923;
   --voice-icon: #4b5563;
   --voice-bg: #edf0f4;
+}
+
+:root[data-theme="light"] .voice-pill[data-state="recording"] {
+  --voice-accent: #f8fafc;
+  --voice-bg: #1e293b;
+
+  color: var(--voice-accent);
+  filter: drop-shadow(0 8px 14px rgb(30 41 59 / 18%));
+}
+
+:root[data-theme="light"]
+  .voice-pill[data-state="recording"]
+  .voice-pill__capsule {
+  background: #1e293b;
 }
 
 :root[data-theme="light"]
@@ -920,19 +1081,19 @@ footer a:hover {
 }
 
 .prompt {
-  margin-right: 10px;
+  margin-right: 8px;
   color: #697484;
 }
 
 .install-card button {
   flex: 0 0 auto;
-  min-width: 64px;
-  height: 34px;
+  min-width: 58px;
+  height: 32px;
   border: 0;
   border-radius: 999px;
   background: #f8f5ef;
   color: #181f2d;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   cursor: pointer;
 }
@@ -964,6 +1125,30 @@ footer a:hover {
   border: 1px solid rgba(255, 255, 255, 0.09);
   border-bottom: 0;
   text-align: center;
+}
+
+.footer-parallax {
+  position: relative;
+  overflow: hidden;
+}
+
+.footer-parallax__inner {
+  position: relative;
+  z-index: 1;
+  will-change: transform;
+}
+
+.footer-parallax__shade {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  background: #070712;
+}
+
+:root[data-theme="light"] .footer-parallax__shade {
+  background: #f8fafc;
 }
 
 .how-it-works h2 {
@@ -1144,6 +1329,10 @@ footer {
   .how-it-works {
     width: calc(100% - 24px);
     padding: 72px 20px;
+  }
+
+  .footer-parallax__inner {
+    will-change: auto;
   }
 
   footer {

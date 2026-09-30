@@ -1,5 +1,9 @@
 import "./docs.css";
+import { initLenis } from "./lenis";
+import { initSiteReveals } from "./reveal";
 import { initSideRays } from "./side-rays";
+
+initLenis();
 
 const menuButton = document.querySelector<HTMLButtonElement>("#menu-button");
 const sidebar = document.querySelector<HTMLElement>("#docs-sidebar");
@@ -48,6 +52,7 @@ themeToggle?.addEventListener("click", () => {
 });
 
 initSideRays({ spread: 3 });
+initSiteReveals();
 
 menuButton?.addEventListener("click", () => {
   setMenu(menuButton.getAttribute("aria-expanded") !== "true");

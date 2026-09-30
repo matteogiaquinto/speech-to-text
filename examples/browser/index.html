@@ -65,18 +65,23 @@
   </head>
   <body>
     <main class="page-shell">
-      <div class="side-rays" data-side-rays aria-hidden="true"></div>
-      <nav class="topbar" aria-label="Project links">
+      <div
+        class="side-rays"
+        data-side-rays
+        data-ignore="true"
+        aria-hidden="true"
+      ></div>
+      <nav class="topbar" aria-label="Project links" data-header-reveal>
         <a
-          class="brand"
+          class="brand homepage-brand"
           href="https://github.com/matteogiaquinto/speech-to-text"
         >
           <img
             class="brand-mark"
-            src="/brand-mark.png"
+            src="/header-logo.png"
             alt=""
-            width="32"
-            height="32"
+            width="38"
+            height="38"
           />
           <span>speech-to-text</span>
         </a>
@@ -129,14 +134,19 @@
         </div>
       </nav>
 
-      <section class="hero">
+      <section
+        class="hero"
+        data-reveal-group
+        data-stagger="78"
+        data-distance="1.1em"
+        data-start="top 98%"
+      >
         <a
           class="release-pill"
           href="https://github.com/matteogiaquinto/speech-to-text"
         >
-          <span>Open source</span>
-          Free forever · MIT
-          <span aria-hidden="true">→</span>
+          <span>Open Source</span>
+          <span class="release-pill__text">Free Forever</span>
         </a>
         <h1>
           Speech-to-text
@@ -149,6 +159,7 @@
 
         <div class="hero-demo">
           <div class="prompt-composer" id="prompt-composer">
+            <span class="prompt-composer__edge-light" aria-hidden="true"></span>
             <textarea
               id="speech-input"
               rows="1"
@@ -234,33 +245,43 @@
         </div>
       </section>
 
-      <section class="how-it-works" aria-labelledby="how-title">
-        <p class="section-kicker">Open, forever</p>
-        <h2 id="how-title">Free to use. Built in public. Yours to ship.</h2>
-        <p class="section-copy">
-          A focused MIT-licensed wrapper around local Whisper dictation — made
-          for real inputs, textareas, and command bars.
-        </p>
-        <div class="pipeline">
-          <div>Microphone</div>
-          <span aria-hidden="true">→</span>
-          <div>speech-to-text</div>
-          <span aria-hidden="true">→</span>
-          <div>browser-whisper</div>
-          <span aria-hidden="true">→</span>
-          <div>Whisper</div>
-          <span aria-hidden="true">→</span>
-          <div>Plain text</div>
-        </div>
-      </section>
+      <div class="footer-parallax" data-footer-parallax>
+        <div class="footer-parallax__inner" data-footer-parallax-inner>
+          <section
+            class="how-it-works"
+            aria-labelledby="how-title"
+            data-reveal-group
+            data-stagger="92"
+          >
+            <p class="section-kicker">Open, forever</p>
+            <h2 id="how-title">Free to use. Built in public. Yours to ship.</h2>
+            <p class="section-copy">
+              A focused MIT-licensed wrapper around local Whisper dictation —
+              made for real inputs, textareas, and command bars.
+            </p>
+            <div class="pipeline">
+              <div>Microphone</div>
+              <span aria-hidden="true">→</span>
+              <div>speech-to-text</div>
+              <span aria-hidden="true">→</span>
+              <div>browser-whisper</div>
+              <span aria-hidden="true">→</span>
+              <div>Whisper</div>
+              <span aria-hidden="true">→</span>
+              <div>Plain text</div>
+            </div>
+          </section>
 
-      <footer>
-        <span>Open source · MIT licensed</span>
-        <a
-          href="https://github.com/matteogiaquinto/speech-to-text/blob/main/INTEGRATION.md"
-          >Integration guide</a
-        >
-      </footer>
+          <footer data-reveal-group data-stagger="80">
+            <span>Open source · MIT licensed</span>
+            <a
+              href="https://github.com/matteogiaquinto/speech-to-text/blob/main/INTEGRATION.md"
+              >Integration guide</a
+            >
+          </footer>
+        </div>
+        <div class="footer-parallax__shade" data-footer-parallax-dark></div>
+      </div>
     </main>
 
     <script type="module" src="/src/main.ts"></script>

@@ -4,8 +4,12 @@ import {
   type SpeechToTextStatus,
 } from "@matteogiaquinto/speech-to-text";
 import { GlideSelect } from "./glide-select";
+import { initLenis } from "./lenis";
+import { initSiteReveals } from "./reveal";
 import { initSideRays } from "./side-rays";
 import "./style.css";
+
+initLenis();
 
 type DemoModel = "whisper-tiny" | "whisper-base" | "whisper-small";
 
@@ -399,7 +403,7 @@ function initPromptComposerBorderGlow() {
   const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
 
   function resetGlow() {
-    composer.style.setProperty("--border-glow-proximity", "0");
+    composer.style.setProperty("--edge-proximity", "0");
   }
 
   composer.addEventListener("pointermove", (event) => {
@@ -410,20 +414,19 @@ function initPromptComposerBorderGlow() {
     const y = event.clientY - bounds.top;
     const centerX = bounds.width / 2;
     const centerY = bounds.height / 2;
-    const distanceFromEdge = Math.min(
-      x,
-      y,
-      bounds.width - x,
-      bounds.height - y,
-    );
-    const proximity = Math.max(
-      0,
-      Math.min(100, (1 - distanceFromEdge / 42) * 100),
-    );
-    const angle = Math.atan2(y - centerY, x - centerX) * (180 / Math.PI) + 90;
+    const distanceX = x - centerX;
+    const distanceY = y - centerY;
+    const edgeX = distanceX === 0 ? Infinity : centerX / Math.abs(distanceX);
+    const edgeY = distanceY === 0 ? Infinity : centerY / Math.abs(distanceY);
+    const proximity = Math.min(Math.max(1 / Math.min(edgeX, edgeY), 0), 1);
+    let angle = Math.atan2(distanceY, distanceX) * (180 / Math.PI) + 90;
+    if (angle < 0) angle += 360;
 
-    composer.style.setProperty("--border-glow-proximity", proximity.toFixed(2));
-    composer.style.setProperty("--border-glow-angle", `${angle.toFixed(2)}deg`);
+    composer.style.setProperty(
+      "--edge-proximity",
+      (proximity * 100).toFixed(3),
+    );
+    composer.style.setProperty("--cursor-angle", `${angle.toFixed(3)}deg`);
   });
 
   composer.addEventListener("pointerleave", resetGlow);
@@ -803,6 +806,7 @@ function updateSlide(clientX: number) {
 }
 
 initSideRays({ spread: 3 });
+initSiteReveals();
 initPromptComposerBorderGlow();
 speech = createEngine();
 renderStatus("idle");

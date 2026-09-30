@@ -89,8 +89,10 @@ pre {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 14px;
-  font-weight: 700;
+  font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.025em;
   text-decoration: none;
 }
 
@@ -109,7 +111,17 @@ pre {
 
 .brand-section {
   color: rgba(248, 245, 239, 0.56);
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  font-size: 13px;
   font-weight: 550;
+  letter-spacing: normal;
 }
 
 .header-links {
@@ -900,9 +912,13 @@ dt code {
 :root[data-theme="light"] .lead,
 :root[data-theme="light"] .fine-print,
 :root[data-theme="light"] .lifecycle-card p,
-:root[data-theme="light"] .docs-footer,
-:root[data-theme="light"] .docs-footer a {
-  color: rgba(23, 25, 35, 0.64);
+:root[data-theme="light"] .callout p,
+:root[data-theme="light"] .check-list li,
+:root[data-theme="light"] .api-item > p,
+:root[data-theme="light"] dt,
+:root[data-theme="light"] dd,
+:root[data-theme="light"] .docs-footer p {
+  color: #3e4755;
 }
 
 :root[data-theme="light"] .header-links a:hover,
@@ -929,7 +945,7 @@ dt code {
 :root[data-theme="light"] .sidebar-group p,
 :root[data-theme="light"] .page-toc p,
 :root[data-theme="light"] .sidebar-footer {
-  color: rgba(23, 25, 35, 0.46);
+  color: #5d6775;
 }
 
 :root[data-theme="light"] .sidebar-group a:hover,
@@ -975,6 +991,41 @@ dt code {
   color: #3e4755;
 }
 
+:root[data-theme="light"] .doc-section p code,
+:root[data-theme="light"] .api-item p code,
+:root[data-theme="light"] .status-row code,
+:root[data-theme="light"] td code,
+:root[data-theme="light"] dt code,
+:root[data-theme="light"] .api-item > div > code,
+:root[data-theme="light"] .formula span {
+  color: #243b67;
+}
+
+:root[data-theme="light"] .doc-section p code,
+:root[data-theme="light"] .api-item p code,
+:root[data-theme="light"] .status-row code,
+:root[data-theme="light"] kbd {
+  border-color: rgba(23, 25, 35, 0.18);
+  background: rgba(23, 25, 35, 0.05);
+  color: #3e4755;
+}
+
+:root[data-theme="light"] .code-block pre {
+  color: #252a35;
+}
+
+:root[data-theme="light"] .token-purple {
+  color: #6846a8;
+}
+
+:root[data-theme="light"] .token-blue {
+  color: #185d9d;
+}
+
+:root[data-theme="light"] .token-green {
+  color: #287047;
+}
+
 :root[data-theme="light"] .copy-button {
   border-color: rgba(23, 25, 35, 0.2);
   background: rgba(23, 25, 35, 0.06);
@@ -992,7 +1043,34 @@ dt code {
 }
 
 :root[data-theme="light"] .token-comment {
-  color: #7a8190;
+  color: #5d6775;
+}
+
+:root[data-theme="light"] .token-muted,
+:root[data-theme="light"] .return-type,
+:root[data-theme="light"] .formula b,
+:root[data-theme="light"] .specimen-label,
+:root[data-theme="light"] .specimen-arrow {
+  color: #5d6775;
+}
+
+:root[data-theme="light"] .text-link,
+:root[data-theme="light"] .page-toc .toc-edit {
+  color: #3449a4;
+}
+
+:root[data-theme="light"] .text-link:hover,
+:root[data-theme="light"] .page-toc .toc-edit:hover {
+  color: #1f2c76;
+}
+
+:root[data-theme="light"] .docs-footer {
+  color: #171923;
+}
+
+:root[data-theme="light"] .docs-footer a {
+  background: #171923;
+  color: #ffffff;
 }
 
 :root[data-theme="light"] .mobile-sidebar-note {

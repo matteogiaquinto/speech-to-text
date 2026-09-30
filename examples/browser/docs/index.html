@@ -23,11 +23,11 @@
   </head>
   <body>
     <div class="docs-side-rays" data-side-rays aria-hidden="true"></div>
-    <header class="docs-header">
+    <header class="docs-header" data-header-reveal>
       <a class="brand" href="../" aria-label="speech-to-text home">
         <img
           class="brand-mark"
-          src="/speech-to-text-mark.svg"
+          src="/header-logo.png"
           alt=""
           width="30"
           height="30"
@@ -127,7 +127,13 @@
 
       <main class="docs-content">
         <article>
-          <section id="introduction" class="doc-section doc-intro">
+          <section
+            id="introduction"
+            class="doc-section doc-intro"
+            data-reveal-group
+            data-stagger="70"
+            data-start="top 98%"
+          >
             <p class="eyebrow">Get started</p>
             <h1>Browser speech-to-text, without the backend.</h1>
             <p class="lead">
@@ -146,7 +152,12 @@
             </div>
           </section>
 
-          <section id="installation" class="doc-section">
+          <section
+            id="installation"
+            class="doc-section"
+            data-reveal-group
+            data-stagger="70"
+          >
             <div class="section-heading">
               <p class="eyebrow">01</p>
               <h2>Installation</h2>
@@ -172,7 +183,12 @@
             </p>
           </section>
 
-          <section id="quick-start" class="doc-section">
+          <section
+            id="quick-start"
+            class="doc-section"
+            data-reveal-group
+            data-stagger="70"
+          >
             <div class="section-heading">
               <p class="eyebrow">02</p>
               <h2>Quick start</h2>
@@ -216,7 +232,12 @@ speech.<span class="token-blue">dispose</span>();</code></pre>
             >
           </section>
 
-          <section id="lifecycle" class="doc-section">
+          <section
+            id="lifecycle"
+            class="doc-section"
+            data-reveal-group
+            data-stagger="70"
+          >
             <div class="section-heading">
               <p class="eyebrow">Core concepts</p>
               <h2>A predictable lifecycle</h2>
@@ -247,7 +268,12 @@ speech.<span class="token-blue">dispose</span>();</code></pre>
             </div>
           </section>
 
-          <section id="status-updates" class="doc-section">
+          <section
+            id="status-updates"
+            class="doc-section"
+            data-reveal-group
+            data-stagger="70"
+          >
             <div class="section-heading">
               <h2>Status updates</h2>
             </div>
@@ -271,7 +297,12 @@ speech.<span class="token-blue">dispose</span>();</code></pre>
             </div>
           </section>
 
-          <section id="models" class="doc-section">
+          <section
+            id="models"
+            class="doc-section"
+            data-reveal-group
+            data-stagger="70"
+          >
             <div class="section-heading">
               <h2>Models & languages</h2>
             </div>
@@ -320,7 +351,12 @@ speech.<span class="token-blue">dispose</span>();</code></pre>
             </div>
           </section>
 
-          <section id="model-cache" class="doc-section">
+          <section
+            id="model-cache"
+            class="doc-section"
+            data-reveal-group
+            data-stagger="70"
+          >
             <div class="section-heading">
               <h2>Model cache</h2>
             </div>
@@ -345,7 +381,12 @@ speech.<span class="token-blue">dispose</span>();</code></pre>
             </div>
           </section>
 
-          <section id="voice-control" class="doc-section">
+          <section
+            id="voice-control"
+            class="doc-section"
+            data-reveal-group
+            data-stagger="70"
+          >
             <div class="section-heading">
               <p class="eyebrow">Build your UI</p>
               <h2>The voice control</h2>
@@ -394,7 +435,12 @@ speech.<span class="token-blue">dispose</span>();</code></pre>
             >
           </section>
 
-          <section id="insert-transcript" class="doc-section">
+          <section
+            id="insert-transcript"
+            class="doc-section"
+            data-reveal-group
+            data-stagger="70"
+          >
             <div class="section-heading">
               <h2>Insert transcripts safely</h2>
             </div>
@@ -415,7 +461,12 @@ speech.<span class="token-blue">dispose</span>();</code></pre>
             </div>
           </section>
 
-          <section id="cleanup" class="doc-section">
+          <section
+            id="cleanup"
+            class="doc-section"
+            data-reveal-group
+            data-stagger="70"
+          >
             <div class="section-heading">
               <h2>Cleanup</h2>
             </div>
@@ -431,7 +482,12 @@ speech.<span class="token-blue">dispose</span>();</code></pre>
             </div>
           </section>
 
-          <section id="api" class="doc-section">
+          <section
+            id="api"
+            class="doc-section"
+            data-reveal-group
+            data-stagger="70"
+          >
             <div class="section-heading">
               <p class="eyebrow">Reference</p>
               <h2>API reference</h2>
@@ -499,7 +555,12 @@ speech.<span class="token-blue">dispose</span>();</code></pre>
             </div>
           </section>
 
-          <section id="errors" class="doc-section">
+          <section
+            id="errors"
+            class="doc-section"
+            data-reveal-group
+            data-stagger="70"
+          >
             <div class="section-heading"><h2>Errors</h2></div>
             <p>
               Failures are exposed as <code>SpeechToTextError</code>,
@@ -518,7 +579,12 @@ speech.<span class="token-blue">dispose</span>();</code></pre>
             </div>
           </section>
 
-          <section id="browser-requirements" class="doc-section">
+          <section
+            id="browser-requirements"
+            class="doc-section"
+            data-reveal-group
+            data-stagger="70"
+          >
             <div class="section-heading"><h2>Browser requirements</h2></div>
             <p>
               Production microphone access requires HTTPS. Localhost is a secure
