@@ -22,18 +22,18 @@ The microphone starts as a compact control and morphs into a left-expanding caps
 
 Recommended defaults:
 
-| Property | Default |
-| --- | --- |
-| footprint | 28 px |
-| shape | pill / circle |
-| expansion direction | left |
-| expansion animation | about 200 ms |
-| press scale | 0.95 |
-| elapsed clock | visible |
-| waveform | visible |
-| slide to cancel | enabled |
-| cancel distance | 64 px |
-| hold threshold | 300 ms |
+| Property            | Default       |
+| ------------------- | ------------- |
+| footprint           | 28 px         |
+| shape               | pill / circle |
+| expansion direction | left          |
+| expansion animation | about 200 ms  |
+| press scale         | 0.95          |
+| elapsed clock       | visible       |
+| waveform            | visible       |
+| slide to cancel     | enabled       |
+| cancel distance     | 64 px         |
+| hold threshold      | 300 ms        |
 
 The capsule surface should use the surrounding product's neutral control surface. The idle microphone should be visually quiet. The active capsule, waveform, timer, and stop mark should have high enough contrast to make recording state obvious.
 

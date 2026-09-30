@@ -176,14 +176,14 @@ Do not invent model, source, attachment, or effort controls merely for visual si
 
 ## Suggested status mapping
 
-| Package status | Product UI |
-| --- | --- |
-| `idle` | compact microphone |
-| `loading` | compact spinner; prevent duplicate activation |
-| `ready` | compact microphone |
-| `recording` | expanded capsule with timer + waveform + stop square |
-| `transcribing` | collapsed busy spinner |
-| `error` | compact microphone + existing product error/notification UI |
+| Package status | Product UI                                                  |
+| -------------- | ----------------------------------------------------------- |
+| `idle`         | compact microphone                                          |
+| `loading`      | compact spinner; prevent duplicate activation               |
+| `ready`        | compact microphone                                          |
+| `recording`    | expanded capsule with timer + waveform + stop square        |
+| `transcribing` | collapsed busy spinner                                      |
+| `error`        | compact microphone + existing product error/notification UI |
 
 Avoid modal dialogs for ordinary microphone denial or transcription errors unless the target product already uses modals for comparable input errors.
 

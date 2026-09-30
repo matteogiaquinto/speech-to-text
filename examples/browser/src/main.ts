@@ -116,10 +116,7 @@ function drawWave(now: number) {
     const x = width - (index + 1) * gap;
     if (x + barWidth < 0) break;
 
-    const barHeight = Math.max(
-      2 * dpr,
-      (0.14 + value * 0.86) * height * 0.76,
-    );
+    const barHeight = Math.max(2 * dpr, (0.14 + value * 0.86) * height * 0.76);
     const fade = Math.max(0.12, x / Math.max(1, width));
 
     context.globalAlpha = fade * (0.45 + value * 0.55);
