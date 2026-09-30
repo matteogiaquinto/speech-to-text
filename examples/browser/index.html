@@ -7,13 +7,54 @@
       name="description"
       content="Try local Whisper speech-to-text directly in your browser. No backend, no API key, no audio upload."
     />
-    <meta name="theme-color" content="#0b0d10" />
+    <meta name="theme-color" content="#070712" />
+    <link
+      rel="canonical"
+      href="https://matteogiaquinto.github.io/speech-to-text/"
+    />
+    <link rel="icon" href="/speech-to-text-mark.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32x32.png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
     <meta property="og:title" content="Local speech-to-text for web apps" />
     <meta
       property="og:description"
       content="Add private, browser-native dictation to any input."
     />
-    <title>Speech to text — local browser demo</title>
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="speech-to-text" />
+    <meta
+      property="og:url"
+      content="https://matteogiaquinto.github.io/speech-to-text/"
+    />
+    <meta
+      property="og:image"
+      content="https://matteogiaquinto.github.io/speech-to-text/social-preview.png"
+    />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Speech-to-text for any web input" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:image"
+      content="https://matteogiaquinto.github.io/speech-to-text/social-preview.png"
+    />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "speech-to-text",
+        "description": "Private, local Whisper dictation for any web input.",
+        "url": "https://matteogiaquinto.github.io/speech-to-text/",
+        "image": "https://matteogiaquinto.github.io/speech-to-text/social-preview.png",
+        "logo": "https://matteogiaquinto.github.io/speech-to-text/speech-to-text-mark.svg",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Web",
+        "isAccessibleForFree": true,
+        "license": "https://opensource.org/license/mit"
+      }
+    </script>
+    <title>Speech-to-text for any web input</title>
   </head>
   <body>
     <main class="page-shell">
@@ -22,40 +63,51 @@
           class="brand"
           href="https://github.com/matteogiaquinto/speech-to-text"
         >
-          <span class="brand-mark" aria-hidden="true">STT</span>
+          <img
+            class="brand-mark"
+            src="/speech-to-text-mark.svg"
+            alt=""
+            width="32"
+            height="32"
+          />
           <span>speech-to-text</span>
         </a>
         <div class="nav-links">
+          <a href="https://github.com/matteogiaquinto/speech-to-text#readme"
+            >Docs</a
+          >
+          <a
+            href="https://github.com/matteogiaquinto/speech-to-text/blob/main/docs/VOICE-UI.md"
+            >Voice UI</a
+          >
           <a
             href="https://www.npmjs.com/package/@matteogiaquinto/speech-to-text"
             >npm</a
           >
-          <a href="https://github.com/matteogiaquinto/speech-to-text">GitHub</a>
         </div>
+        <a
+          class="github-link"
+          href="https://github.com/matteogiaquinto/speech-to-text"
+          >View on GitHub <span aria-hidden="true">↗</span></a
+        >
       </nav>
 
       <section class="hero">
-        <div class="eyebrow">Local Whisper · browser-only</div>
+        <a
+          class="release-pill"
+          href="https://github.com/matteogiaquinto/speech-to-text"
+        >
+          <span>Open source</span>
+          Free forever · MIT
+          <span aria-hidden="true">→</span>
+        </a>
         <h1>Speech-to-text for any web input.</h1>
         <p class="hero-copy">
           Add private dictation without a backend, API key, or audio upload.
           Everything runs locally in your browser.
         </p>
 
-        <div class="demo-card">
-          <div class="demo-heading">
-            <div>
-              <p class="demo-kicker">Live demo</p>
-              <h2>Dictate into an AI-style prompt.</h2>
-            </div>
-            <div id="status-pill" class="status-pill" data-state="idle">
-              <span class="status-dot" aria-hidden="true"></span>
-              <span id="status-text" aria-live="polite"
-                >Ready when you are</span
-              >
-            </div>
-          </div>
-
+        <div class="hero-demo">
           <div class="prompt-composer" id="prompt-composer">
             <textarea
               id="speech-input"
@@ -135,10 +187,18 @@
             </div>
           </div>
 
-          <p id="hint" class="hint">
-            Tap the microphone to latch recording. Hold to talk and release to
-            stop. While holding, slide left to cancel.
-          </p>
+          <div class="demo-foot">
+            <p id="hint" class="hint">
+              Tap the microphone to latch recording. Hold to talk and release to
+              stop. While holding, slide left to cancel.
+            </p>
+            <div id="status-pill" class="status-pill" data-state="idle">
+              <span class="status-dot" aria-hidden="true"></span>
+              <span id="status-text" aria-live="polite"
+                >Ready when you are</span
+              >
+            </div>
+          </div>
         </div>
 
         <div class="install-card" aria-label="Installation command">
@@ -158,8 +218,12 @@
       </section>
 
       <section class="how-it-works" aria-labelledby="how-title">
-        <p class="section-kicker">How it works</p>
-        <h2 id="how-title">A small wrapper around the hard parts.</h2>
+        <p class="section-kicker">Open, forever</p>
+        <h2 id="how-title">Free to use. Built in public. Yours to ship.</h2>
+        <p class="section-copy">
+          A focused MIT-licensed wrapper around local Whisper dictation — made
+          for real inputs, textareas, and command bars.
+        </p>
         <div class="pipeline">
           <div>Microphone</div>
           <span aria-hidden="true">→</span>
@@ -174,7 +238,7 @@
       </section>
 
       <footer>
-        <span>MIT licensed</span>
+        <span>Open source · MIT licensed</span>
         <a
           href="https://github.com/matteogiaquinto/speech-to-text/blob/main/INTEGRATION.md"
           >Integration guide</a

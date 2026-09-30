@@ -1,0 +1,23 @@
+{
+  "name": "Speech-to-text for web apps",
+  "short_name": "speech-to-text",
+  "description": "Private, local Whisper dictation for any web input.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#070712",
+  "theme_color": "#070712",
+  "icons": [
+    {
+      "src": "speech-to-text-mark.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
