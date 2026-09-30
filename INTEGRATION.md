@@ -132,14 +132,14 @@ Do not change field height, surrounding labels, validation messages, or form spa
 
 ## Suggested status mapping
 
-| Package status | Product UI |
-| --- | --- |
-| `idle` | normal microphone |
-| `loading` | loading indicator; prevent duplicate activation |
-| `ready` | normal microphone |
-| `recording` | active/recording microphone state |
-| `transcribing` | busy indicator |
-| `error` | restore normal control and show existing product error/notification UI |
+| Package status | Product UI                                                             |
+| -------------- | ---------------------------------------------------------------------- |
+| `idle`         | normal microphone                                                      |
+| `loading`      | loading indicator; prevent duplicate activation                        |
+| `ready`        | normal microphone                                                      |
+| `recording`    | active/recording microphone state                                      |
+| `transcribing` | busy indicator                                                         |
+| `error`        | restore normal control and show existing product error/notification UI |
 
 Avoid modal dialogs for ordinary microphone denial or transcription errors unless the target product already uses modals for comparable input errors.
 

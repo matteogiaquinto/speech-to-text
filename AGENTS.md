@@ -103,7 +103,6 @@ Use `npm version minor` or `npm version major` only when the release semantics j
 
 Publishing requires authentication for the npm organization and npm's required 2FA/security-key flow. Do not change the package scope to work around an authentication or permission error.
 
-
 ## Public repository quality
 
 This is a public package and should remain presentable as a pinned GitHub project.

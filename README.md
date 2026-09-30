@@ -86,12 +86,12 @@ The wrapper accepts the models supported by the installed `browser-whisper` vers
 
 Common choices:
 
-| Model | Relative speed | Relative accuracy | Good fit |
-| --- | --- | --- | --- |
-| `whisper-tiny` | Fastest | Lower | Very lightweight dictation |
-| `whisper-base` | Fast | Good | Default / balanced |
-| `whisper-small` | Slower | Better | Higher-quality short dictation |
-| `whisper-large-v3-turbo` | Heavier | Higher | Powerful devices where quality matters more |
+| Model                    | Relative speed | Relative accuracy | Good fit                                    |
+| ------------------------ | -------------- | ----------------- | ------------------------------------------- |
+| `whisper-tiny`           | Fastest        | Lower             | Very lightweight dictation                  |
+| `whisper-base`           | Fast           | Good              | Default / balanced                          |
+| `whisper-small`          | Slower         | Better            | Higher-quality short dictation              |
+| `whisper-large-v3-turbo` | Heavier        | Higher            | Powerful devices where quality matters more |
 
 Example:
 

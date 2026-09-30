@@ -101,7 +101,8 @@ function insertTranscript(transcript: string) {
   const caret = before.length + insertion.length;
   input.focus();
   input.setSelectionRange(caret, caret);
-  hint.textContent = "Transcription inserted locally. Click the microphone to speak again.";
+  hint.textContent =
+    "Transcription inserted locally. Click the microphone to speak again.";
 }
 
 function showError(error: unknown) {

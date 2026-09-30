@@ -1,6 +1,11 @@
 :root {
   font-family:
-    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
     sans-serif;
   color: #f5f7fa;
   background: #0b0d10;
@@ -17,7 +22,11 @@ body {
   min-width: 320px;
   min-height: 100vh;
   background:
-    radial-gradient(circle at 50% -10%, rgba(91, 109, 255, 0.2), transparent 32rem),
+    radial-gradient(
+      circle at 50% -10%,
+      rgba(91, 109, 255, 0.2),
+      transparent 32rem
+    ),
     #0b0d10;
 }
 
