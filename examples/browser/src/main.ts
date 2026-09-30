@@ -13,6 +13,287 @@ const SLIDE_MIN = 4;
 const WAVE_MAX = 42;
 const WAVE_SAMPLE_MS = 52;
 
+type DotGridState = {
+  element: HTMLElement;
+  canvas: HTMLCanvasElement;
+  context: CanvasRenderingContext2D;
+  width: number;
+  height: number;
+  visible: boolean;
+  inactive: number[];
+  active: number[];
+};
+
+type EaseState = {
+  value: number;
+  from: number;
+  to: number;
+  start: number;
+};
+
+function initInteractiveDotsGridBackground() {
+  const elements = document.querySelectorAll<HTMLElement>(
+    "[data-dots-canvas-init]",
+  );
+  if (!elements.length) return;
+
+  const gap = "1.15em";
+  const dotSize = "0.1em";
+  const dotMaxScale = 1.75;
+  const pressScale = 1.5;
+  const hoverRadius = 12;
+  const easeDuration = 0.5;
+  const hasPointer =
+    matchMedia("(hover: hover) and (pointer: fine)").matches &&
+    !matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const pointer = { x: 0, y: 0, currentX: 0, currentY: 0, active: false };
+  const hover: EaseState = { value: 0, from: 0, to: 0, start: 0 };
+  const press: EaseState = { value: 0, from: 0, to: 0, start: 0 };
+  const grids: DotGridState[] = [];
+
+  let deviceScale = 1;
+  let size = 1;
+  let spacing = 1;
+  let radius = 1;
+  let animationFrameId = 0;
+  let lastTime = performance.now();
+
+  function toPixels(value: string, element: HTMLElement) {
+    const probe = document.createElement("div");
+    probe.style.cssText = `position:absolute;visibility:hidden;width:${value};`;
+    element.appendChild(probe);
+    const pixels = probe.getBoundingClientRect().width;
+    probe.remove();
+    return pixels;
+  }
+
+  function parseColor(color: string, element: HTMLElement) {
+    const probe = document.createElement("span");
+    probe.style.color = color;
+    element.appendChild(probe);
+    const resolved = getComputedStyle(probe).color;
+    probe.remove();
+
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("2d");
+    if (!context) return [255, 255, 255, 0];
+
+    context.fillStyle = resolved;
+    context.fillRect(0, 0, 1, 1);
+    const values = [...context.getImageData(0, 0, 1, 1).data];
+    values[3] /= 255;
+    return values;
+  }
+
+  function mixColor(start: number[], end: number[], progress: number) {
+    return `rgba(${start
+      .map((value, index) => value + (end[index] - value) * progress)
+      .join(",")})`;
+  }
+
+  function setEase(state: EaseState, target: number) {
+    Object.assign(state, {
+      from: state.value,
+      to: target,
+      start: performance.now(),
+    });
+  }
+
+  function updateEase(state: EaseState, time: number) {
+    const progress = Math.min(
+      Math.max((time - state.start) / (easeDuration * 1000), 0),
+      1,
+    );
+    state.value =
+      state.from + (state.to - state.from) * (1 - Math.pow(1 - progress, 4));
+  }
+
+  elements.forEach((element) => {
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("2d");
+    if (!context) return;
+
+    canvas.setAttribute("aria-hidden", "true");
+    Object.assign(canvas.style, {
+      position: "absolute",
+      inset: "0",
+      width: "100%",
+      height: "100%",
+      pointerEvents: "none",
+    });
+    element.prepend(canvas);
+
+    grids.push({
+      element,
+      canvas,
+      context,
+      width: 0,
+      height: 0,
+      visible: false,
+      inactive: parseColor(
+        element.dataset.dotsColorInactive ?? "rgba(255, 255, 255, 0.055)",
+        element,
+      ),
+      active: parseColor(
+        element.dataset.dotsColorActive ?? "rgba(255, 255, 255, 0.2)",
+        element,
+      ),
+    });
+  });
+
+  function pointerInside() {
+    return grids.some(({ element }) => {
+      const bounds = element.getBoundingClientRect();
+      return (
+        pointer.x >= bounds.left &&
+        pointer.x <= bounds.right &&
+        pointer.y >= bounds.top &&
+        pointer.y <= bounds.bottom
+      );
+    });
+  }
+
+  function render(state: DotGridState, origin: DOMRect) {
+    const bounds = state.element.getBoundingClientRect();
+    const left = bounds.left - origin.left;
+    const top = bounds.top - origin.top;
+    const pointerX = pointer.currentX - origin.left;
+    const pointerY = pointer.currentY - origin.top;
+    const maxScale = dotMaxScale * (1 + (pressScale - 1) * press.value);
+
+    state.context.clearRect(0, 0, state.width, state.height);
+
+    const columnStart = Math.floor(left / spacing);
+    const columnEnd = Math.ceil((left + state.width) / spacing);
+    const rowStart = Math.floor(top / spacing);
+    const rowEnd = Math.ceil((top + state.height) / spacing);
+
+    for (let row = rowStart; row <= rowEnd; row += 1) {
+      const gridY = row * spacing;
+      const y = gridY - top;
+
+      for (let column = columnStart; column <= columnEnd; column += 1) {
+        const gridX = column * spacing;
+        const x = gridX - left;
+        const influence =
+          hasPointer && hover.value
+            ? Math.max(
+                0,
+                1 - Math.hypot(gridX - pointerX, gridY - pointerY) / radius,
+              ) * hover.value
+            : 0;
+        const currentSize = size * (1 + (maxScale - 1) * influence);
+
+        state.context.fillStyle = mixColor(
+          state.inactive,
+          state.active,
+          influence,
+        );
+        state.context.beginPath();
+        state.context.arc(x, y, currentSize / 2, 0, Math.PI * 2);
+        state.context.fill();
+      }
+    }
+  }
+
+  function renderAll(visibleOnly = false) {
+    const origin = elements[0].getBoundingClientRect();
+    grids.forEach((state) => {
+      if (!visibleOnly || state.visible) render(state, origin);
+    });
+  }
+
+  function tick(time: number) {
+    animationFrameId = 0;
+    if (!grids.some((state) => state.visible)) return;
+
+    const delta = Math.min((time - lastTime) / 1000, 0.1);
+    lastTime = time;
+    updateEase(hover, time);
+    updateEase(press, time);
+
+    const strength = 1 - Math.exp((-delta * 6) / easeDuration);
+    pointer.currentX += (pointer.x - pointer.currentX) * strength;
+    pointer.currentY += (pointer.y - pointer.currentY) * strength;
+
+    renderAll(true);
+    animationFrameId = requestAnimationFrame(tick);
+  }
+
+  function start() {
+    if (
+      hasPointer &&
+      !animationFrameId &&
+      grids.some((state) => state.visible)
+    ) {
+      lastTime = performance.now();
+      animationFrameId = requestAnimationFrame(tick);
+    }
+  }
+
+  function resize() {
+    deviceScale = Math.min(devicePixelRatio || 1, 2);
+    size = toPixels(dotSize, elements[0]);
+    spacing = size + toPixels(gap, elements[0]);
+    radius = spacing * hoverRadius;
+
+    grids.forEach((state) => {
+      const bounds = state.element.getBoundingClientRect();
+      state.width = bounds.width;
+      state.height = bounds.height;
+      state.canvas.width = Math.round(bounds.width * deviceScale);
+      state.canvas.height = Math.round(bounds.height * deviceScale);
+      state.context.setTransform(deviceScale, 0, 0, deviceScale, 0, 0);
+    });
+
+    renderAll();
+    start();
+  }
+
+  if (hasPointer) {
+    window.addEventListener("pointermove", (event) => {
+      pointer.x = event.clientX;
+      pointer.y = event.clientY;
+      const inside = pointerInside();
+
+      if (inside !== pointer.active) {
+        pointer.active = inside;
+        setEase(hover, Number(inside));
+
+        if (inside) {
+          pointer.currentX = pointer.x;
+          pointer.currentY = pointer.y;
+        } else {
+          setEase(press, 0);
+        }
+      }
+
+      start();
+    });
+    window.addEventListener("pointerdown", () => {
+      if (pointer.active) setEase(press, 1);
+    });
+    window.addEventListener("pointerup", () => setEase(press, 0));
+  }
+
+  const intersectionObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      const state = grids.find(({ element }) => element === entry.target);
+      if (state) state.visible = entry.isIntersecting;
+    });
+    if (hasPointer) start();
+    else renderAll(true);
+  });
+  const resizeObserver = new ResizeObserver(resize);
+
+  elements.forEach((element) => {
+    intersectionObserver.observe(element);
+    resizeObserver.observe(element);
+  });
+  window.addEventListener("resize", resize);
+  resize();
+}
+
 const input = document.querySelector<HTMLTextAreaElement>("#speech-input");
 const microphone = document.querySelector<HTMLButtonElement>("#microphone");
 const statusPill = document.querySelector<HTMLElement>("#status-pill");
@@ -334,6 +615,7 @@ function updateSlide(clientX: number) {
   if (progress >= 1) cancelRecording();
 }
 
+initInteractiveDotsGridBackground();
 speech = createEngine();
 renderStatus("idle");
 autoGrowInput();
