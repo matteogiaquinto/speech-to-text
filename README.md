@@ -108,7 +108,7 @@ A single `SpeechToText` instance uses one model. Create a new instance when you 
 
 For CRM, forms, admin panels, and other applications, follow [INTEGRATION.md](./INTEGRATION.md).
 
-The standard integration is an icon-only microphone button at the far right of an existing input. The consumer application should reuse one long-lived `SpeechToText` instance, preserve existing field text, expose loading/recording/transcribing states, and keep manual typing usable after errors.
+The standard integration uses a compact microphone that morphs into a left-expanding recording capsule with elapsed time, waveform feedback, and a stop mark. AI-style prompts use an auto-growing composer with the voice control in the bottom toolbar; ordinary inputs keep it at the far right. See [`docs/VOICE-UI.md`](./docs/VOICE-UI.md) for the canonical interaction contract.
 
 Coding agents working from this repository should also follow [AGENTS.md](./AGENTS.md).
 

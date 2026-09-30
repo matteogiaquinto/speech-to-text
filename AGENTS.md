@@ -6,37 +6,52 @@ This repository owns the reusable browser speech-to-text package `@matteogiaquin
 
 The package is intentionally small. It wraps `browser-whisper` and exposes `createSpeechToText()` so product repositories can add local Whisper dictation without reimplementing audio capture or inference.
 
-When working on this repository, preserve that scope. Do not add product-specific UI components to the package.
+When working on this repository, preserve that scope. Do not add product-specific framework UI components to the published package.
 
 ## Consumer integration contract
 
-When an agent is asked to integrate this speech-to-text system into another application, follow `INTEGRATION.md` as the source of truth.
+When an agent is asked to integrate this speech-to-text system into another application:
 
-The expected product behavior is:
-
-1. Install and use `@matteogiaquinto/speech-to-text`. Do not fork, copy, or directly reimplement `browser-whisper`.
-2. Reuse the target application's existing input, textarea, form, icon, button, tooltip, notification, and design-system components.
-3. Add an icon-only microphone control at the far right inside the target text input's visual container. Keep it vertically centered for a single-line input. Preserve enough right padding on the field so typed text never sits under the button.
-4. Do not redesign the surrounding form. The microphone is an input adornment, not a separate large action.
-5. Use the target application's existing microphone icon if one exists. Do not add a new icon library only for this feature.
-6. Give the button an accessible label and tooltip. Minimum labels are equivalent to "Start dictation" and "Stop dictation".
-7. Create one long-lived speech-to-text instance for the relevant mounted feature and reuse it across recordings. Do not create a new Whisper instance for every click.
-8. Do not download the model automatically on initial page load. Model preparation is substantial. Start preparation after explicit user intent, normally on the first microphone click, show a loading state, then start recording automatically when preparation finishes.
-9. First microphone activation: prepare if needed, then call `start()`. While recording, the same control stops recording. On stop, call `stop()`, wait for transcription, then write the returned string into the target field.
-10. Preserve existing field content. Prefer inserting the transcription at the current caret/selection when the target UI makes this practical. Otherwise append it with exactly one separating space. Never silently replace existing user text unless the product explicitly requires replacement.
-11. Use the application's state update mechanism for controlled fields. Do not mutate DOM `.value` directly in React/Vue/etc. unless the field is intentionally uncontrolled.
-12. Keep the field manually usable while the speech feature is idle or after an error.
-13. Map package status to UI:
-    - `loading`: disable repeated microphone activation and show a small loading indicator on/in place of the microphone.
-    - `recording`: clearly show an active recording state.
-    - `transcribing`: show a small busy indicator and prevent duplicate stop/start actions.
-    - `ready` / `idle`: normal microphone state.
-    - `error`: restore the normal input and show a concise non-blocking error using the product's existing notification pattern.
-14. Call `dispose()` when the owning component/feature is permanently unmounted. Do not dispose between ordinary recordings.
-15. If several fields on the same screen need dictation, prefer sharing one speech-to-text instance and track which field is active. Only one recording/transcription should run at a time.
-16. Production microphone access requires a secure context (HTTPS; localhost is acceptable for local development).
-17. Do not blindly add COOP/COEP headers. They can affect third-party resources. Add the cross-origin-isolation headers documented in the README only when the target deployment needs the threaded WASM fallback, then verify the whole application still works.
-18. Test at least: first model preparation, a second recording without re-downloading, repeated start/stop, French transcription, preservation of existing field text, microphone permission denial, and cleanup on unmount.
+1. Follow `INTEGRATION.md` as the general integration source of truth.
+2. Follow `docs/VOICE-UI.md` as the canonical microphone visual/interaction specification.
+3. Use the public browser demo in `examples/browser` as the visual reference.
+4. Install and use `@matteogiaquinto/speech-to-text`. Do not fork, copy, or directly reimplement `browser-whisper`.
+5. Reuse the target application's existing input, textarea, form, icon, button, tooltip, notification, and design-system primitives.
+6. At rest, use a compact microphone control, approximately 28 px by default.
+7. While recording, morph the control into a capsule that expands left and shows elapsed time, waveform feedback, and a stop square.
+8. Use the canonical interactions:
+   - short tap starts and latches recording;
+   - second tap stops and transcribes;
+   - hold for about 300 ms enables push-to-talk and release stops;
+   - while the starting pointer is still held, slide left about 64 px to cancel and discard;
+   - `Enter` / `Space` start or stop;
+   - `Escape` cancels.
+9. For a normal single-line input, keep the compact microphone at the far right inside the field wrapper and reserve enough room that the expanded capsule cannot cover editable text.
+10. For an AI/chat/command prompt, use an auto-growing textarea with a bottom toolbar. Place the voice pill on the toolbar's right side, immediately before an existing send button when applicable.
+11. For an ordinary multiline textarea, place the voice pill at the right edge, normally bottom-right.
+12. Do not invent model, source, attachment, effort, or send controls just to imitate an AI product. Reuse only capabilities that really exist in the host application.
+13. Reuse the host application's colors, typography, icons, tooltips, and focus treatment. Do not add an icon library only for this feature.
+14. Keep the button accessible with a label equivalent to `Start dictation` / `Stop dictation` and synchronize `aria-pressed`.
+15. Respect `prefers-reduced-motion`; remove nonessential morphing/sliding while preserving clear state changes.
+16. Create one long-lived speech-to-text instance for the relevant mounted feature and reuse it across successful recordings. Do not create a new Whisper instance for every click.
+17. Do not download the model automatically on initial page load. Start preparation after explicit user intent, show a compact loading spinner, then start recording automatically when preparation finishes.
+18. On a normal stop, call `stop()`, wait for transcription, then insert the returned string into the active field.
+19. On slide-to-cancel, discard the result. The current package has no dedicated `cancel()` method; disposing/recreating the active instance is acceptable because the browser model cache remains.
+20. Preserve existing field content. Prefer inserting transcription at the caret/selection when practical; otherwise append with exactly one separating space.
+21. Use the application's state update mechanism for controlled fields. Do not mutate DOM `.value` directly in React/Vue/etc. unless the field is intentionally uncontrolled.
+22. Keep manual typing usable while idle and after errors.
+23. Map package status to UI:
+    - `loading`: compact spinner; prevent duplicate activation.
+    - `recording`: expanded capsule with timer + waveform + stop square.
+    - `transcribing`: collapsed busy spinner; prevent duplicate activation.
+    - `ready` / `idle`: compact microphone.
+    - `error`: compact microphone plus the host product's normal non-blocking error UI.
+24. If microphone levels are already available, use them for waveform feedback. Otherwise a subtle simulated waveform is acceptable; do not open a second microphone stream only for decoration.
+25. Call `dispose()` when the owning component/feature is permanently unmounted. Do not dispose between ordinary successful recordings.
+26. If several fields on the same screen need dictation, prefer sharing one speech-to-text instance and track which field is active. Only one recording/transcription should run at a time.
+27. Production microphone access requires a secure context (HTTPS; localhost is acceptable for local development).
+28. Do not blindly add COOP/COEP headers. They can affect third-party resources. Add the cross-origin-isolation headers documented in the README only when the target deployment needs the threaded WASM fallback, then verify the whole application still works.
+29. Test at least: first model preparation, tap-to-latch, hold-to-talk, slide-to-cancel, keyboard controls, a second recording without re-downloading, repeated start/stop, French transcription, preservation of existing field text, microphone permission denial, reduced motion, and cleanup on unmount.
 
 ### Model cache behavior
 
@@ -60,7 +75,7 @@ import { createSpeechToText } from "@matteogiaquinto/speech-to-text";
 const speech = createSpeechToText({
   language: "fr",
   onStatus(status) {
-    // Map this to the target application's UI state.
+    // Map package status to the host product's voice-control UI.
   },
 });
 
@@ -110,7 +125,8 @@ This is a public package and should remain presentable as a pinned GitHub projec
 When changing public-facing material:
 
 - Keep the README product-oriented and concise near the top.
-- Keep the browser demo in `examples/browser` functional and visually representative of the recommended input integration.
+- Keep the browser demo in `examples/browser` functional and visually representative of the recommended integration.
+- Keep `docs/VOICE-UI.md`, `INTEGRATION.md`, and the demo aligned; do not change one interaction contract without updating the others.
 - Do not add a UI framework dependency only for the demo.
 - Preserve the CI workflow and keep all quality checks green.
 - Keep the public demo deployable as a static Vite build.

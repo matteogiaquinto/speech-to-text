@@ -46,7 +46,7 @@
           <div class="demo-heading">
             <div>
               <p class="demo-kicker">Live demo</p>
-              <h2>Click the microphone and speak.</h2>
+              <h2>Dictate into an AI-style prompt.</h2>
             </div>
             <div id="status-pill" class="status-pill" data-state="idle">
               <span class="status-dot" aria-hidden="true"></span>
@@ -56,65 +56,88 @@
             </div>
           </div>
 
-          <label class="field-label" for="speech-input">Try dictation</label>
-          <div class="speech-field">
-            <input
+          <div class="prompt-composer" id="prompt-composer">
+            <textarea
               id="speech-input"
-              type="text"
+              rows="1"
               autocomplete="off"
-              placeholder="Type here or dictate with the microphone…"
-            />
-            <button
-              id="microphone"
-              class="mic-button"
-              type="button"
-              aria-label="Start dictation"
-              title="Start dictation"
-            >
-              <svg
-                class="mic-icon"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+              placeholder="Ask anything — type or use the microphone…"
+              aria-label="Prompt"
+            ></textarea>
+
+            <div class="prompt-toolbar">
+              <label class="prompt-picker">
+                <span class="sr-only">Language</span>
+                <select id="language" aria-label="Language">
+                  <option value="fr" selected>French</option>
+                  <option value="en">English</option>
+                  <option value="de">German</option>
+                  <option value="it">Italian</option>
+                  <option value="es">Spanish</option>
+                </select>
+                <svg viewBox="0 0 16 16" aria-hidden="true">
+                  <path d="m5 6 3 3 3-3" />
+                </svg>
+              </label>
+
+              <label class="prompt-picker">
+                <span class="sr-only">Whisper model</span>
+                <select id="model" aria-label="Whisper model">
+                  <option value="whisper-tiny">Tiny</option>
+                  <option value="whisper-base" selected>Base</option>
+                  <option value="whisper-small">Small</option>
+                </select>
+                <svg viewBox="0 0 16 16" aria-hidden="true">
+                  <path d="m5 6 3 3 3-3" />
+                </svg>
+              </label>
+
+              <span class="prompt-spacer"></span>
+
+              <button
+                id="microphone"
+                class="voice-pill"
+                type="button"
+                aria-label="Start dictation"
+                aria-pressed="false"
+                title="Start dictation"
+                data-state="idle"
               >
-                <rect x="9" y="2.5" width="6" height="12" rx="3"></rect>
-                <path d="M5.5 10.5a6.5 6.5 0 0 0 13 0"></path>
-                <path d="M12 17v4"></path>
-                <path d="M8.5 21h7"></path>
-              </svg>
-              <span class="spinner" aria-hidden="true"></span>
-            </button>
-          </div>
-
-          <div class="settings-row">
-            <label>
-              <span>Language</span>
-              <select id="language">
-                <option value="fr" selected>French</option>
-                <option value="en">English</option>
-                <option value="de">German</option>
-                <option value="it">Italian</option>
-                <option value="es">Spanish</option>
-              </select>
-            </label>
-
-            <label>
-              <span>Model</span>
-              <select id="model">
-                <option value="whisper-tiny">whisper-tiny</option>
-                <option value="whisper-base" selected>whisper-base</option>
-                <option value="whisper-small">whisper-small</option>
-              </select>
-            </label>
+                <span class="voice-pill__capsule" aria-hidden="true"></span>
+                <canvas
+                  id="voice-wave"
+                  class="voice-pill__wave"
+                  aria-hidden="true"
+                ></canvas>
+                <span class="voice-pill__cancel" aria-hidden="true">
+                  <svg viewBox="0 0 16 16">
+                    <path d="M11 4 7 8l4 4M7 8h6" />
+                  </svg>
+                  <span>Cancel</span>
+                </span>
+                <span
+                  id="voice-time"
+                  class="voice-pill__time"
+                  aria-hidden="true"
+                  >0:00</span
+                >
+                <span class="voice-pill__glyph" aria-hidden="true">
+                  <svg class="voice-pill__mic" viewBox="0 0 24 24">
+                    <rect x="9" y="3" width="6" height="11" rx="3"></rect>
+                    <path d="M6 10.5a6 6 0 0 0 12 0"></path>
+                    <path d="M12 16.5V21"></path>
+                    <path d="M9 21h6"></path>
+                  </svg>
+                  <span class="voice-pill__stop"></span>
+                  <span class="voice-pill__spinner"></span>
+                </span>
+              </button>
+            </div>
           </div>
 
           <p id="hint" class="hint">
-            First use may download the selected model. Later visits to this site
-            normally reuse the browser cache.
+            Tap the microphone to latch recording. Hold to talk and release to
+            stop. While holding, slide left to cancel.
           </p>
         </div>
 
