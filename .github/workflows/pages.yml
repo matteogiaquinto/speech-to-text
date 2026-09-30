@@ -1,6 +1,9 @@
 name: Deploy demo to GitHub Pages
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
@@ -15,10 +18,17 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      pages-ready: ${{ steps.pages.outcome }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Check Pages configuration
+        id: pages
+        continue-on-error: true
+        uses: actions/configure-pages@v5
 
       - name: Set up pnpm
         uses: pnpm/action-setup@v4
@@ -43,6 +53,7 @@ jobs:
           path: examples/browser/dist
 
   deploy:
+    if: needs.build.outputs.pages-ready == 'success'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
