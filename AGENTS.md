@@ -34,7 +34,7 @@ When an agent is asked to integrate this speech-to-text system into another appl
 14. Keep the button accessible with a label equivalent to `Start dictation` / `Stop dictation` and synchronize `aria-pressed`.
 15. Respect `prefers-reduced-motion`; remove nonessential morphing/sliding while preserving clear state changes.
 16. Create one long-lived speech-to-text instance for the relevant mounted feature and reuse it across successful recordings. Do not create a new Whisper instance for every click.
-17. Do not download the model automatically on initial page load. Start preparation after explicit user intent, show a compact loading spinner, then start recording automatically when preparation finishes.
+17. Use the package default background preload after the page `load` event and browser idle time. Set `preload: "on-demand"` only when the host product intentionally wants first-use preparation. `start()` handles either mode and waits for preparation before recording.
 18. On a normal stop, call `stop()`, wait for transcription, then insert the returned string into the active field.
 19. On slide-to-cancel, discard the result. The current package has no dedicated `cancel()` method; disposing/recreating the active instance is acceptable because the browser model cache remains.
 20. Preserve existing field content. Prefer inserting transcription at the caret/selection when practical; otherwise append with exactly one separating space.
@@ -60,7 +60,9 @@ When an agent is asked to integrate this speech-to-text system into another appl
 - The first use for a given browser profile + origin may download the model.
 - Later visits to the same origin normally reuse the stored model instead of downloading it again.
 - Reloading or closing the browser does not normally remove the cached model.
-- `dispose()` releases runtime/worker resources; it does not clear the stored model.
+- The wrapper defaults to `cachePolicy: "single-model"`, removes other known model caches after preparation, and garbage-collects stale unreferenced OPFS files older than 24 hours.
+- Use `cachePolicy: "keep-all"` only for products that intentionally need several models cached.
+- `dispose()` releases runtime/worker resources; it does not clear the selected stored model.
 - A different domain/subdomain, browser, browser profile, private session, cleared site data, or another machine can require another download.
 
 Do not tell users that the model is downloaded "once per machine"; that is too broad. The useful mental model is "once per browser profile and site origin, until site data is removed."
@@ -79,7 +81,6 @@ const speech = createSpeechToText({
   },
 });
 
-await speech.prepare();
 await speech.start();
 const text = await speech.stop();
 
@@ -92,7 +93,7 @@ Do not import `browser-whisper` directly from consumer applications unless a con
 
 This package is published publicly as `@matteogiaquinto/speech-to-text` under the npm organization scope `@matteogiaquinto`.
 
-The version `0.1.0` has already been published to npm. npm package versions are immutable: **never attempt to publish an already-published version again**.
+The version `0.1.0` has already been published to npm. This repository now targets `0.2.0` for the preload/cache-policy release. npm package versions are immutable: **never attempt to publish an already-published version again**.
 
 Before any future npm release:
 
