@@ -194,8 +194,9 @@
               <h2>Quick start</h2>
             </div>
             <p>
-              Create one long-lived instance, prepare the model after explicit
-              user intent, then start and stop recording.
+              Create one long-lived instance. By default, the model preloads
+              after page load and idle time, then <code>start()</code> begins
+              recording.
             </p>
             <div class="code-block">
               <div class="code-label">TypeScript</div>
@@ -206,7 +207,7 @@
   model: <span class="token-green">"whisper-base"</span>,
 });
 
-<span class="token-purple">await</span> speech.<span class="token-blue">prepare</span>();
+<span class="token-comment">// The model preloads after page load by default.</span>
 <span class="token-purple">await</span> speech.<span class="token-blue">start</span>();
 
 <span class="token-comment">// The user speaks.</span>
@@ -225,9 +226,10 @@ speech.<span class="token-blue">dispose</span>();</code></pre>
             <template id="quick-start-code"
               >import { createSpeechToText } from
               "@matteogiaquinto/speech-to-text"; const speech =
-              createSpeechToText({ language: "fr", model: "whisper-base", });
-              await speech.prepare(); await speech.start(); // The user speaks.
-              const text = await speech.stop(); console.log(text);
+              createSpeechToText({ language: "fr", model: "whisper-base", }); //
+              The model preloads after page load by default. await
+              speech.start(); // The user speaks. const text = await
+              speech.stop(); console.log(text);
               speech.dispose();</template
             >
           </section>
@@ -245,16 +247,16 @@ speech.<span class="token-blue">dispose</span>();</code></pre>
             <div class="lifecycle-grid">
               <div class="lifecycle-card">
                 <span>1</span>
-                <h3>Prepare</h3>
+                <h3>Preload</h3>
                 <p>
-                  Download or restore the model without opening the microphone.
+                  Restore or download the model after page load and idle time.
                 </p>
-                <code>speech.prepare()</code>
+                <code>preload: "after-load"</code>
               </div>
               <div class="lifecycle-card">
                 <span>2</span>
                 <h3>Record</h3>
-                <p>Request microphone access and begin a new recording.</p>
+                <p>Ensure model readiness, then request microphone access.</p>
                 <code>speech.start()</code>
               </div>
               <div class="lifecycle-card">
