@@ -324,6 +324,7 @@ footer a:hover {
 }
 
 .hero-demo {
+  width: 100%;
   max-width: 780px;
   margin: 38px auto 0;
   text-align: left;
@@ -407,6 +408,8 @@ footer a:hover {
 
   position: relative;
   isolation: isolate;
+  width: 100%;
+  min-width: 0;
   transform: translate3d(0, 0, 0.01px);
   display: flex;
   flex-direction: column;
@@ -557,6 +560,7 @@ footer a:hover {
 .prompt-composer textarea {
   display: block;
   width: 100%;
+  min-width: 0;
   min-height: 48px;
   max-height: 132px;
   padding: 1px 2px;
