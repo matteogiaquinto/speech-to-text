@@ -221,10 +221,13 @@ footer a:hover {
 
 .hero {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   width: min(1100px, calc(100% - 48px));
   min-height: calc(100vh - 80px);
   margin: 0 auto;
-  padding: clamp(130px, 15vh, 190px) 80px 84px;
+  padding: clamp(40px, 6vh, 72px) 80px;
   text-align: center;
 }
 
@@ -246,6 +249,7 @@ footer a:hover {
 
 .release-pill {
   display: inline-flex;
+  align-self: center;
   gap: 7px;
   align-items: center;
   min-height: 32px;
