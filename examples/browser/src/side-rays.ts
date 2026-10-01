@@ -2,7 +2,6 @@ type SideRaysOptions = {
   speed: number;
   frameRate: number;
   renderScale: number;
-  animationDuration: number;
   rayColor1: string;
   rayColor2: string;
   intensity: number;
@@ -18,7 +17,6 @@ const defaults: SideRaysOptions = {
   speed: 2.5,
   frameRate: 20,
   renderScale: 0.5,
-  animationDuration: 4000,
   rayColor1: "#eab308",
   rayColor2: "#96c8ff",
   intensity: 2,
@@ -190,10 +188,7 @@ void main() {
   }
 
   function render(timestamp = 0) {
-    const elapsed = Math.min(
-      Math.max(0, timestamp - animationStartedAt),
-      settings.animationDuration,
-    );
+    const elapsed = Math.max(0, timestamp - animationStartedAt);
     context.useProgram(program);
     context.uniform1f(
       uniforms.time,
@@ -224,12 +219,7 @@ void main() {
 
   function queue() {
     stop();
-    if (
-      document.hidden ||
-      reducedMotion.matches ||
-      performance.now() - animationStartedAt >= settings.animationDuration
-    )
-      return;
+    if (document.hidden || reducedMotion.matches) return;
     timer = window.setTimeout(() => {
       timer = 0;
       frame = requestAnimationFrame((timestamp) => {
