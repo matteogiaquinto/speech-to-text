@@ -362,7 +362,8 @@ speech.<span class="token-blue">dispose</span>();</code></pre>
             </div>
             <p>
               Model files are stored in browser origin-private storage and are
-              normally reused on later visits.
+              normally reused on later visits. By default the wrapper keeps only
+              the selected model and cleans stale unreferenced cache files.
             </p>
             <div class="formula">
               <span>browser profile</span><b>+</b><span>site origin</span
@@ -375,7 +376,9 @@ speech.<span class="token-blue">dispose</span>();</code></pre>
                 <p>
                   Private browsing, another origin or profile, cleared site
                   data, or a different device may require another download.
-                  <code>dispose()</code> does not clear cached model files.
+                  Use <code>cachePolicy: "keep-all"</code> only when several
+                  models must remain cached. <code>dispose()</code> does not
+                  clear the selected cached model.
                 </p>
               </div>
             </div>
@@ -511,6 +514,20 @@ speech.<span class="token-blue">dispose</span>();</code></pre>
                     </dd>
                   </div>
                   <div>
+                    <dt><code>preload?: "after-load" | "on-demand"</code></dt>
+                    <dd>
+                      Default: <code>"after-load"</code>. Background preparation
+                      starts only after page load and idle time.
+                    </dd>
+                  </div>
+                  <div>
+                    <dt><code>cachePolicy?: "single-model" | "keep-all"</code></dt>
+                    <dd>
+                      Default: <code>"single-model"</code>. Prevents model caches
+                      from accumulating across model changes.
+                    </dd>
+                  </div>
+                  <div>
                     <dt><code>onStatus?: (status) =&gt; void</code></dt>
                     <dd>Receives coarse lifecycle updates.</dd>
                   </div>
@@ -523,15 +540,22 @@ speech.<span class="token-blue">dispose</span>();</code></pre>
                 </div>
                 <p>
                   Downloads or initializes the selected model without opening
-                  the microphone.
+                  the microphone. Calls are idempotent and single-flight.
                 </p>
+              </div>
+              <div class="api-item">
+                <div>
+                  <code>isPrepared()</code
+                  ><span class="return-type">boolean</span>
+                </div>
+                <p>Reports whether the model is initialized in this runtime.</p>
               </div>
               <div class="api-item">
                 <div>
                   <code>start()</code
                   ><span class="return-type">Promise&lt;void&gt;</span>
                 </div>
-                <p>Requests microphone access and begins a recording.</p>
+                <p>Ensures the model is prepared, then requests microphone access and begins a recording.</p>
               </div>
               <div class="api-item">
                 <div>
