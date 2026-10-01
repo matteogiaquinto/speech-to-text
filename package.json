@@ -1,6 +1,6 @@
 {
   "name": "@matteogiaquinto/speech-to-text",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Local speech-to-text for web apps. Add private Whisper-powered dictation to any input with no backend or API key.",
   "type": "module",
   "main": "./dist/index.js",

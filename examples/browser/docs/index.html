@@ -194,8 +194,9 @@
               <h2>Quick start</h2>
             </div>
             <p>
-              Create one long-lived instance, prepare the model after explicit
-              user intent, then start and stop recording.
+              Create one long-lived instance. By default, the model preloads
+              after page load and idle time, then <code>start()</code> begins
+              recording.
             </p>
             <div class="code-block">
               <div class="code-label">TypeScript</div>
@@ -206,7 +207,7 @@
   model: <span class="token-green">"whisper-base"</span>,
 });
 
-<span class="token-purple">await</span> speech.<span class="token-blue">prepare</span>();
+<span class="token-comment">// The model preloads after page load by default.</span>
 <span class="token-purple">await</span> speech.<span class="token-blue">start</span>();
 
 <span class="token-comment">// The user speaks.</span>
@@ -225,10 +226,10 @@ speech.<span class="token-blue">dispose</span>();</code></pre>
             <template id="quick-start-code"
               >import { createSpeechToText } from
               "@matteogiaquinto/speech-to-text"; const speech =
-              createSpeechToText({ language: "fr", model: "whisper-base", });
-              await speech.prepare(); await speech.start(); // The user speaks.
-              const text = await speech.stop(); console.log(text);
-              speech.dispose();</template
+              createSpeechToText({ language: "fr", model: "whisper-base", }); //
+              The model preloads after page load by default. await
+              speech.start(); // The user speaks. const text = await
+              speech.stop(); console.log(text); speech.dispose();</template
             >
           </section>
 
@@ -245,16 +246,16 @@ speech.<span class="token-blue">dispose</span>();</code></pre>
             <div class="lifecycle-grid">
               <div class="lifecycle-card">
                 <span>1</span>
-                <h3>Prepare</h3>
+                <h3>Preload</h3>
                 <p>
-                  Download or restore the model without opening the microphone.
+                  Restore or download the model after page load and idle time.
                 </p>
-                <code>speech.prepare()</code>
+                <code>preload: "after-load"</code>
               </div>
               <div class="lifecycle-card">
                 <span>2</span>
                 <h3>Record</h3>
-                <p>Request microphone access and begin a new recording.</p>
+                <p>Ensure model readiness, then request microphone access.</p>
                 <code>speech.start()</code>
               </div>
               <div class="lifecycle-card">
@@ -362,7 +363,8 @@ speech.<span class="token-blue">dispose</span>();</code></pre>
             </div>
             <p>
               Model files are stored in browser origin-private storage and are
-              normally reused on later visits.
+              normally reused on later visits. By default the wrapper keeps only
+              the selected model and cleans stale unreferenced cache files.
             </p>
             <div class="formula">
               <span>browser profile</span><b>+</b><span>site origin</span
@@ -374,8 +376,10 @@ speech.<span class="token-blue">dispose</span>();</code></pre>
                 <strong>Cache scope matters</strong>
                 <p>
                   Private browsing, another origin or profile, cleared site
-                  data, or a different device may require another download.
-                  <code>dispose()</code> does not clear cached model files.
+                  data, or a different device may require another download. Use
+                  <code>cachePolicy: "keep-all"</code> only when several models
+                  must remain cached. <code>dispose()</code> does not clear the
+                  selected cached model.
                 </p>
               </div>
             </div>
@@ -511,6 +515,22 @@ speech.<span class="token-blue">dispose</span>();</code></pre>
                     </dd>
                   </div>
                   <div>
+                    <dt><code>preload?: "after-load" | "on-demand"</code></dt>
+                    <dd>
+                      Default: <code>"after-load"</code>. Background preparation
+                      starts only after page load and idle time.
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>
+                      <code>cachePolicy?: "single-model" | "keep-all"</code>
+                    </dt>
+                    <dd>
+                      Default: <code>"single-model"</code>. Prevents model
+                      caches from accumulating across model changes.
+                    </dd>
+                  </div>
+                  <div>
                     <dt><code>onStatus?: (status) =&gt; void</code></dt>
                     <dd>Receives coarse lifecycle updates.</dd>
                   </div>
@@ -523,15 +543,25 @@ speech.<span class="token-blue">dispose</span>();</code></pre>
                 </div>
                 <p>
                   Downloads or initializes the selected model without opening
-                  the microphone.
+                  the microphone. Calls are idempotent and single-flight.
                 </p>
+              </div>
+              <div class="api-item">
+                <div>
+                  <code>isPrepared()</code
+                  ><span class="return-type">boolean</span>
+                </div>
+                <p>Reports whether the model is initialized in this runtime.</p>
               </div>
               <div class="api-item">
                 <div>
                   <code>start()</code
                   ><span class="return-type">Promise&lt;void&gt;</span>
                 </div>
-                <p>Requests microphone access and begins a recording.</p>
+                <p>
+                  Ensures the model is prepared, then requests microphone access
+                  and begins a recording.
+                </p>
               </div>
               <div class="api-item">
                 <div>

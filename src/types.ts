@@ -3,22 +3,31 @@ export type SpeechToTextStatus =
 
 import type { ASRModel } from "browser-whisper";
 
+export type SpeechToTextPreload = "after-load" | "on-demand";
+export type SpeechToTextCachePolicy = "single-model" | "keep-all";
+
 export interface CreateSpeechToTextOptions {
   /** BCP-47 language code passed to Whisper. Defaults to French. */
   language?: string;
   /** A browser-whisper Whisper model. Defaults to whisper-base. */
   model?: ASRModel;
-  /** Receives coarse lifecycle updates. */
+  /** Preload after page load/idle time, or prepare on first start(). */
+  preload?: SpeechToTextPreload;
+  /** Keep only the selected model by default, or preserve all cached models. */
+  cachePolicy?: SpeechToTextCachePolicy;
+  /** Receives coarse lifecycle updates from explicit user-facing operations. */
   onStatus?: (status: SpeechToTextStatus) => void;
 }
 
 export interface SpeechToText {
-  /** Downloads and initializes the selected model without opening the microphone. */
+  /** Whether the selected model is initialized in this runtime. */
+  isPrepared(): boolean;
+  /** Downloads and initializes the selected model. Safe to call repeatedly. */
   prepare(): Promise<void>;
-  /** Requests microphone access and begins a new recording. */
+  /** Ensures the model is prepared, then requests microphone access. */
   start(): Promise<void>;
   /** Stops recording, transcribes it locally, and returns plain text. */
   stop(): Promise<string>;
-  /** Stops any microphone track and cancels an in-flight transcription. */
+  /** Stops tracks, cancels preparation/transcription, and releases resources. */
   dispose(): void;
 }

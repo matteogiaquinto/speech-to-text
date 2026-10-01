@@ -510,7 +510,6 @@ const model = new GlideSelect(modelRoot, {
   onChange: () => resetEngine(),
 });
 
-let prepared = false;
 let currentStatus: SpeechToTextStatus = "idle";
 let speech: SpeechToText;
 let pointerId: number | null = null;
@@ -670,13 +669,12 @@ function createEngine(): SpeechToText {
 function resetEngine() {
   startSequence += 1;
   speech?.dispose();
-  prepared = false;
   stopWhenRecording = false;
   settleSlide();
   speech = createEngine();
   renderStatus("idle");
   hint.textContent =
-    "The selected model will be prepared on your next microphone press.";
+    "The selected model will preload in the background when the browser is idle.";
 }
 
 function insertTranscript(transcript: string) {
@@ -726,12 +724,9 @@ async function startRecording() {
   const sequence = ++startSequence;
 
   try {
-    if (!prepared) {
+    if (!speech.isPrepared()) {
       hint.textContent =
         "Preparing the selected model. The first use can take longer…";
-      await speech.prepare();
-      if (sequence !== startSequence) return;
-      prepared = true;
     }
 
     await speech.start();
@@ -829,7 +824,7 @@ microphone.addEventListener("pointerdown", (event) => {
   pointerDownX = event.clientX;
   pointerDownAt = performance.now();
   pointerStartedRecording = currentStatus !== "recording";
-  pointerStartedPrepared = prepared;
+  pointerStartedPrepared = speech.isPrepared();
   stopWhenRecording = false;
   microphone.dataset.pressed = "";
 

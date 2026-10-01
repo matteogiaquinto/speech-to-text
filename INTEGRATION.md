@@ -50,18 +50,20 @@ Equivalent npm/yarn/bun commands are acceptable when the target repository alrea
 
 The field behaves exactly as it did before integration.
 
-The microphone button is visible but no model should be downloaded merely because the page rendered.
+By default, creating the instance schedules silent model preparation after the page has fully loaded and the browser becomes idle. This does not request microphone permission and does not block the page's initial render.
+
+A host that prefers first-use loading can set `preload: "on-demand"`.
 
 ### First microphone activation
 
 1. Record that the user explicitly requested dictation.
 2. Create/reuse the speech-to-text instance.
-3. If the model is not prepared in the current runtime, call `prepare()`.
-4. While it prepares, keep the microphone compact and show a small loading spinner.
-5. When preparation succeeds, immediately call `start()`.
+3. Call `start()`. It reuses a completed background preparation, waits for an in-flight one, or prepares on demand when necessary.
+4. If preparation is still required, map the package's `loading` status to the compact loading state.
+5. When preparation succeeds, recording starts automatically.
 6. Change the control to the expanded recording capsule.
 
-The first preparation may need to obtain a substantial model. Do not hide a long first-time loading state.
+The first preparation may still need to obtain a substantial model if the background preload has not completed or on-demand mode is used. Do not hide a long first-time loading state.
 
 If first-use preparation outlasts a held pointer gesture, finish preparation and latch recording rather than immediately stopping an empty recording.
 
@@ -122,8 +124,8 @@ const speech = createSpeechToText({
   },
 });
 
-// Explicit user intent:
-await speech.prepare();
+// Default: background preparation starts after page load.
+// start() waits for the same preparation if it is still running.
 await speech.start();
 
 // Normal stop:
@@ -209,7 +211,9 @@ Only one recording should be active at a time.
 
 The default model is `whisper-base`.
 
-The model is not expected to download on every transcription. `browser-whisper` stores model files in origin-private browser storage and reuses them on later visits to the same site.
+The model is not expected to download on every transcription or page visit. `browser-whisper` stores model files in origin-private browser storage and reuses them on later visits to the same site.
+
+The wrapper defaults to `cachePolicy: "single-model"`. After the selected model is ready, other known browser-whisper model caches are deleted. It also removes unreferenced OPFS files older than 24 hours. Use `cachePolicy: "keep-all"` only when the product intentionally wants several models cached.
 
 Treat the cache scope as:
 
@@ -275,10 +279,10 @@ Before considering an integration complete, verify:
 - hold-to-talk works after preparation;
 - slide-left cancellation discards the result;
 - keyboard start/stop/cancel works;
-- first explicit use prepares the model and communicates loading;
+- default background preload begins only after page load/idle time, or `on-demand` is configured intentionally;
 - transcript insertion preserves existing text;
 - multiple recordings reuse the same runtime;
-- model is not intentionally re-downloaded for every recording;
+- repeated visits/recordings reuse the same cached model and do not accumulate old model caches under the default policy;
 - permission denial leaves the field usable;
 - cleanup calls `dispose()` on permanent unmount;
 - production uses HTTPS;
