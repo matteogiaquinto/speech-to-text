@@ -7,8 +7,20 @@ gsap.registerPlugin(ScrollTrigger);
 
 export function initLenis() {
   const lenis = new Lenis();
+  let frame = 0;
+
+  const update = (time: number) => {
+    frame = 0;
+    lenis.raf(time);
+    if (lenis.isScrolling === "smooth") {
+      frame = requestAnimationFrame(update);
+    }
+  };
+
+  const wake = () => {
+    if (!frame) frame = requestAnimationFrame(update);
+  };
 
   lenis.on("scroll", ScrollTrigger.update);
-  gsap.ticker.add((time) => lenis.raf(time * 1000));
-  gsap.ticker.lagSmoothing(0);
+  lenis.on("virtual-scroll", wake);
 }

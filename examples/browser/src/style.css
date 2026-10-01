@@ -308,7 +308,7 @@ footer a:hover {
   background-size: 200% 100%;
   background-clip: text;
   -webkit-background-clip: text;
-  animation: shimmer 4s linear infinite;
+  animation: shimmer 4s linear both;
 }
 
 .hero-copy {
@@ -1212,6 +1212,10 @@ footer {
 @keyframes shimmer {
   from {
     background-position: 200% 0;
+  }
+
+  to {
+    background-position: -200% 0;
   }
 }
 

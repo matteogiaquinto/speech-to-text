@@ -1,5 +1,8 @@
 type SideRaysOptions = {
   speed: number;
+  frameRate: number;
+  renderScale: number;
+  animationDuration: number;
   rayColor1: string;
   rayColor2: string;
   intensity: number;
@@ -13,6 +16,9 @@ type SideRaysOptions = {
 
 const defaults: SideRaysOptions = {
   speed: 2.5,
+  frameRate: 20,
+  renderScale: 0.5,
+  animationDuration: 4000,
   rayColor1: "#eab308",
   rayColor2: "#96c8ff",
   intensity: 2,
@@ -60,30 +66,31 @@ uniform float speed;
 uniform vec3 rayColor1;
 uniform vec3 rayColor2;
 uniform float intensity;
-uniform float spread;
-uniform float tilt;
+uniform vec2 direction1;
+uniform vec2 direction2;
+uniform float tiltCos;
+uniform float tiltSin;
 uniform float saturation;
 uniform float blend;
 uniform float falloff;
 uniform float opacity;
 
-float rayStrength(vec2 source, vec2 direction, vec2 coordinate, float seedA, float seedB, float velocity) {
-  vec2 sourceToCoordinate = coordinate - source;
-  float cosine = dot(normalize(sourceToCoordinate), direction);
-  return clamp((0.45 + 0.15 * sin(cosine * seedA + time * velocity)) + (0.3 + 0.2 * cos(-cosine * seedB + time * velocity)), 0.0, 1.0) * clamp((resolution.x - length(sourceToCoordinate)) / resolution.x, 0.5, 1.0);
+float rayStrength(vec2 normalizedRelative, vec2 direction, float seedA, float seedB, float velocity) {
+  float cosine = dot(normalizedRelative, direction);
+  return clamp((0.45 + 0.15 * sin(cosine * seedA + time * velocity)) + (0.3 + 0.2 * cos(-cosine * seedB + time * velocity)), 0.0, 1.0);
 }
 
 void main() {
   vec2 coordinate = vec2(gl_FragCoord.x, resolution.y - gl_FragCoord.y);
   vec2 source = vec2(resolution.x * 1.1, -0.5 * resolution.y);
-  float angle = tilt * 0.0174532925;
   vec2 relative = coordinate - source;
-  vec2 rotated = vec2(relative.x * cos(angle) - relative.y * sin(angle), relative.x * sin(angle) + relative.y * cos(angle)) + source;
-  float halfSpread = spread * 0.275;
-  vec2 direction1 = normalize(vec2(cos(0.785398 + halfSpread), sin(0.785398 + halfSpread)));
-  vec2 direction2 = normalize(vec2(cos(0.785398 - halfSpread), sin(0.785398 - halfSpread)));
-  vec3 color = rayColor1 * rayStrength(source, direction1, rotated, 36.2214, 21.11349, speed) * (1.0 - blend) * 0.9 + rayColor2 * rayStrength(source, direction2, rotated, 22.3991, 18.0234, speed * 0.2) * blend * 0.9;
-  float distanceToLight = length(gl_FragCoord.xy - vec2(source.x, resolution.y - source.y)) / resolution.y;
+  float sourceDistance = length(relative);
+  vec2 rotatedRelative = vec2(relative.x * tiltCos - relative.y * tiltSin, relative.x * tiltSin + relative.y * tiltCos);
+  vec2 normalizedRelative = rotatedRelative / max(sourceDistance, 0.001);
+  float distanceFade = clamp((resolution.x - sourceDistance) / resolution.x, 0.5, 1.0);
+  vec3 color = rayColor1 * rayStrength(normalizedRelative, direction1, 36.2214, 21.11349, speed) * (1.0 - blend) * 0.9 + rayColor2 * rayStrength(normalizedRelative, direction2, 22.3991, 18.0234, speed * 0.2) * blend * 0.9;
+  color *= distanceFade;
+  float distanceToLight = sourceDistance / resolution.y;
   color *= intensity * 0.4 / pow(max(distanceToLight, 0.001), falloff);
   float grayscale = dot(color, vec3(0.299, 0.587, 0.114));
   color = mix(vec3(grayscale), color, saturation);
@@ -133,47 +140,123 @@ void main() {
   const position = context.getAttribLocation(program, "position");
   context.enableVertexAttribArray(position);
   context.vertexAttribPointer(position, 2, context.FLOAT, false, 0, 0);
-  const uniform = (name: string) => context.getUniformLocation(program, name);
+  const uniformNames = [
+    "time",
+    "resolution",
+    "speed",
+    "rayColor1",
+    "rayColor2",
+    "direction1",
+    "direction2",
+    "tiltCos",
+    "tiltSin",
+    "intensity",
+    "saturation",
+    "blend",
+    "falloff",
+    "opacity",
+  ] as const;
+  const uniforms = Object.fromEntries(
+    uniformNames.map((name) => [
+      name,
+      context.getUniformLocation(program, name),
+    ]),
+  ) as Record<(typeof uniformNames)[number], WebGLUniformLocation | null>;
   const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+  const animationStartedAt = performance.now();
   let frame = 0;
+  let timer = 0;
+
+  const halfSpread = settings.spread * 0.275;
+  const direction1 = [
+    Math.cos(Math.PI / 4 + halfSpread),
+    Math.sin(Math.PI / 4 + halfSpread),
+  ];
+  const direction2 = [
+    Math.cos(Math.PI / 4 - halfSpread),
+    Math.sin(Math.PI / 4 - halfSpread),
+  ];
+  const tilt = settings.tilt * (Math.PI / 180);
+  const color1 = hexToRgb(settings.rayColor1);
+  const color2 = hexToRgb(settings.rayColor2);
 
   function resize() {
-    const scale = Math.min(devicePixelRatio || 1, 2);
+    // The rays are intentionally soft, so sub-native resolution is visually
+    // indistinguishable while avoiding millions of fragment operations.
+    const scale = Math.min(devicePixelRatio || 1, 1) * settings.renderScale;
     canvas.width = Math.max(1, Math.round(container.clientWidth * scale));
     canvas.height = Math.max(1, Math.round(container.clientHeight * scale));
     context.viewport(0, 0, canvas.width, canvas.height);
   }
 
   function render(timestamp = 0) {
+    const elapsed = Math.min(
+      Math.max(0, timestamp - animationStartedAt),
+      settings.animationDuration,
+    );
     context.useProgram(program);
     context.uniform1f(
-      uniform("time"),
-      reducedMotion.matches ? 0 : timestamp * 0.001,
+      uniforms.time,
+      reducedMotion.matches ? 0 : elapsed * 0.001,
     );
-    context.uniform2f(uniform("resolution"), canvas.width, canvas.height);
-    context.uniform1f(uniform("speed"), settings.speed);
-    context.uniform3fv(uniform("rayColor1"), hexToRgb(settings.rayColor1));
-    context.uniform3fv(uniform("rayColor2"), hexToRgb(settings.rayColor2));
-    context.uniform1f(uniform("intensity"), settings.intensity);
-    context.uniform1f(uniform("spread"), settings.spread);
-    context.uniform1f(uniform("tilt"), settings.tilt);
-    context.uniform1f(uniform("saturation"), settings.saturation);
-    context.uniform1f(uniform("blend"), settings.blend);
-    context.uniform1f(uniform("falloff"), settings.falloff);
-    context.uniform1f(uniform("opacity"), settings.opacity);
+    context.uniform2f(uniforms.resolution, canvas.width, canvas.height);
+    context.uniform1f(uniforms.speed, settings.speed);
+    context.uniform3fv(uniforms.rayColor1, color1);
+    context.uniform3fv(uniforms.rayColor2, color2);
+    context.uniform2fv(uniforms.direction1, direction1);
+    context.uniform2fv(uniforms.direction2, direction2);
+    context.uniform1f(uniforms.tiltCos, Math.cos(tilt));
+    context.uniform1f(uniforms.tiltSin, Math.sin(tilt));
+    context.uniform1f(uniforms.intensity, settings.intensity);
+    context.uniform1f(uniforms.saturation, settings.saturation);
+    context.uniform1f(uniforms.blend, settings.blend);
+    context.uniform1f(uniforms.falloff, settings.falloff);
+    context.uniform1f(uniforms.opacity, settings.opacity);
     context.drawArrays(context.TRIANGLES, 0, 3);
-    if (!reducedMotion.matches) frame = requestAnimationFrame(render);
+  }
+
+  function stop() {
+    window.clearTimeout(timer);
+    cancelAnimationFrame(frame);
+    timer = 0;
+    frame = 0;
+  }
+
+  function queue() {
+    stop();
+    if (
+      document.hidden ||
+      reducedMotion.matches ||
+      performance.now() - animationStartedAt >= settings.animationDuration
+    )
+      return;
+    timer = window.setTimeout(() => {
+      timer = 0;
+      frame = requestAnimationFrame((timestamp) => {
+        frame = 0;
+        render(timestamp);
+        queue();
+      });
+    }, 1000 / settings.frameRate);
+  }
+
+  function refresh() {
+    stop();
+    render(performance.now());
+    queue();
   }
 
   const observer = new ResizeObserver(() => {
     resize();
-    if (reducedMotion.matches) render();
+    refresh();
   });
   observer.observe(container);
-  reducedMotion.addEventListener("change", () => {
-    cancelAnimationFrame(frame);
-    render();
+  reducedMotion.addEventListener("change", refresh);
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) stop();
+    else refresh();
   });
+  window.addEventListener("pagehide", stop, { once: true });
   resize();
-  render();
+  refresh();
 }
