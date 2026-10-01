@@ -18,8 +18,7 @@ const DEFAULT_PRELOAD = "after-load";
 const DEFAULT_CACHE_POLICY = "single-model";
 
 let browserWhisperModulePromise:
-  | Promise<typeof import("browser-whisper")>
-  | undefined;
+  Promise<typeof import("browser-whisper")> | undefined;
 
 export function createSpeechToText(
   options: CreateSpeechToTextOptions = {},

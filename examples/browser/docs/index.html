@@ -375,10 +375,10 @@ speech.<span class="token-blue">dispose</span>();</code></pre>
                 <strong>Cache scope matters</strong>
                 <p>
                   Private browsing, another origin or profile, cleared site
-                  data, or a different device may require another download.
-                  Use <code>cachePolicy: "keep-all"</code> only when several
-                  models must remain cached. <code>dispose()</code> does not
-                  clear the selected cached model.
+                  data, or a different device may require another download. Use
+                  <code>cachePolicy: "keep-all"</code> only when several models
+                  must remain cached. <code>dispose()</code> does not clear the
+                  selected cached model.
                 </p>
               </div>
             </div>
@@ -521,10 +521,12 @@ speech.<span class="token-blue">dispose</span>();</code></pre>
                     </dd>
                   </div>
                   <div>
-                    <dt><code>cachePolicy?: "single-model" | "keep-all"</code></dt>
+                    <dt>
+                      <code>cachePolicy?: "single-model" | "keep-all"</code>
+                    </dt>
                     <dd>
-                      Default: <code>"single-model"</code>. Prevents model caches
-                      from accumulating across model changes.
+                      Default: <code>"single-model"</code>. Prevents model
+                      caches from accumulating across model changes.
                     </dd>
                   </div>
                   <div>
@@ -555,7 +557,10 @@ speech.<span class="token-blue">dispose</span>();</code></pre>
                   <code>start()</code
                   ><span class="return-type">Promise&lt;void&gt;</span>
                 </div>
-                <p>Ensures the model is prepared, then requests microphone access and begins a recording.</p>
+                <p>
+                  Ensures the model is prepared, then requests microphone access
+                  and begins a recording.
+                </p>
               </div>
               <div class="api-item">
                 <div>

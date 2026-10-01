@@ -1,10 +1,5 @@
 export type SpeechToTextStatus =
-  | "idle"
-  | "loading"
-  | "ready"
-  | "recording"
-  | "transcribing"
-  | "error";
+  "idle" | "loading" | "ready" | "recording" | "transcribing" | "error";
 
 import type { ASRModel } from "browser-whisper";
 
