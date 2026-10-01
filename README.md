@@ -35,7 +35,7 @@ const speech = createSpeechToText({
   model: "whisper-base",
 });
 
-await speech.prepare();
+// The model preloads silently after page load by default.
 await speech.start();
 
 // The user speaks.
@@ -45,7 +45,7 @@ console.log(text);
 speech.dispose();
 ```
 
-`language` defaults to `"fr"`; `model` defaults to `"whisper-base"`.
+`language` defaults to `"fr"`; `model` defaults to `"whisper-base"`. `preload` defaults to `"after-load"`; use `"on-demand"` to defer preparation until the first `start()`.
 
 ## Features
 
@@ -53,7 +53,9 @@ speech.dispose();
 - No backend or speech API key.
 - Audio stays in the user's browser.
 - Uses WebGPU when available, with browser-whisper fallbacks.
+- Preloads the selected model after page load and browser idle time by default.
 - Reuses downloaded model files through browser origin-private storage.
+- Keeps one model cached by default and cleans stale OPFS orphan files.
 - French by default, with multilingual Whisper support.
 - Multiple Whisper models.
 - Framework-agnostic TypeScript API.
@@ -114,12 +116,14 @@ Coding agents working from this repository should also follow [AGENTS.md](./AGEN
 
 ## Lifecycle
 
-- `prepare()` downloads or loads the selected model without opening the microphone.
-- `start()` requests microphone access and begins recording.
+- By default, model preparation is scheduled after the page has loaded and the browser becomes idle.
+- `prepare()` is idempotent and single-flight; explicit calls can still force readiness at any time.
+- `start()` ensures the model is prepared, then requests microphone access and begins recording.
+- `isPrepared()` reports whether the model is initialized in the current runtime.
 - `stop()` stops the microphone, transcribes locally, and returns plain text.
-- `dispose()` stops tracks, cancels in-flight transcription, and releases runtime resources.
+- `dispose()` cancels scheduled/in-flight preparation, stops tracks, cancels transcription, and releases runtime resources.
 
-`start()` rejects while already recording. `stop()` rejects when no recording is active.
+Use `preload: "on-demand"` when a host application does not want background preparation after page load. `start()` rejects while already recording. `stop()` rejects when no recording is active.
 
 Errors are exposed as `SpeechToTextError`, `MicrophoneError`, or `TranscriptionError`, with the underlying error available as `cause`.
 
@@ -133,9 +137,11 @@ The useful mental model is:
 browser profile + site origin = model cache
 ```
 
-Later visits to the same origin normally reuse the stored model instead of downloading it again.
+Later visits to the same origin normally reuse the stored model instead of downloading it again. Reopening the browser does not normally create another copy.
 
-A different domain/subdomain, browser, browser profile, private session, cleared site data, or different computer can require another download. Calling `dispose()` releases runtime resources but does not clear the downloaded model.
+The wrapper defaults to `cachePolicy: "single-model"`: after the selected model is ready, cached files for other browser-whisper models are removed and stale unreferenced OPFS files older than 24 hours are cleaned. Sites that intentionally need several cached models can use `cachePolicy: "keep-all"`.
+
+A different domain/subdomain, browser, browser profile, private session, cleared site data, or different computer can require another download. Calling `dispose()` releases runtime resources but does not clear the selected downloaded model.
 
 The default `whisper-base` model is substantial (approximately 136 MB), so the first preparation can take noticeably longer than later uses.
 
@@ -152,7 +158,7 @@ Cross-Origin-Opener-Policy: same-origin
 
 Do not add those headers blindly to an existing product; they can affect third-party resources. Verify the complete application when enabling cross-origin isolation.
 
-Model files are fetched on first use when not already cached, but recorded audio and transcription stay in the browser. Review browser-whisper's own hosting and model-download behavior before making production privacy guarantees.
+Model files are fetched during preparation when not already cached (background after page load by default), but recorded audio and transcription stay in the browser. Review browser-whisper's own hosting and model-download behavior before making production privacy guarantees.
 
 ## Live demo
 
