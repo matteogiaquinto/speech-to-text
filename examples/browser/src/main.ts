@@ -762,12 +762,9 @@ function cancelRecording() {
   startSequence += 1;
   stopWhenRecording = false;
   settleSlide();
-  speech.dispose();
-  prepared = false;
-  speech = createEngine();
-  renderStatus("idle");
+  void speech.cancel().catch(showError);
   hint.textContent =
-    "Recording cancelled. The model stays cached in the browser and will be reloaded on the next use.";
+    "Recording cancelled. The prepared model is ready for the next recording.";
 }
 
 function settleSlide() {

@@ -35,6 +35,11 @@ export function createSpeechToText(
   let prepared = false;
   let disposed = false;
   let recording = false;
+  let busy = false;
+  let generation = 0;
+  let interrupt: (() => void) | undefined;
+  let stopSettled: Promise<void> | undefined;
+  let resolveStop: (() => void) | undefined;
   let cancelScheduledPreload: () => void = () => undefined;
 
   const setStatus = (status: SpeechToTextStatus) => options.onStatus?.(status);
@@ -70,7 +75,7 @@ export function createSpeechToText(
     }
 
     if (prepared) {
-      if (reportStatus) setStatus("ready");
+      if (reportStatus && !disposed) setStatus("ready");
       return;
     }
 
@@ -87,6 +92,7 @@ export function createSpeechToText(
         };
 
         await engine.downloadModel(downloadOptions);
+        if (disposed) return;
         prepared = true;
         scheduleModelCacheMaintenance(browserWhisper, model, cachePolicy);
       })().finally(() => {
@@ -95,9 +101,9 @@ export function createSpeechToText(
       });
 
       await preparePromise;
-      if (reportStatus) setStatus("ready");
+      if (reportStatus && !disposed) setStatus("ready");
     } catch (error) {
-      if (reportStatus) setStatus("error");
+      if (reportStatus && !disposed) setStatus("error");
       throw new TranscriptionError("The Whisper model could not be prepared.", {
         cause: error,
       });
@@ -114,41 +120,59 @@ export function createSpeechToText(
     },
 
     async start() {
-      if (disposed) {
+      if (disposed || busy || recording) {
         throw new TranscriptionError(
-          "This speech-to-text instance has been disposed.",
+          "The instance is disposed or an operation is in progress.",
         );
       }
-      if (recording) {
-        throw new TranscriptionError("A recording is already in progress.");
+      const token = generation;
+      busy = true;
+      if (!prepared) setStatus("loading");
+      try {
+        await ensurePrepared(false);
+        if (disposed || token !== generation) return;
+        await recorder.start();
+        if (disposed || token !== generation) return;
+        recording = true;
+        setStatus("recording");
+      } catch (error) {
+        if (!disposed && token === generation) {
+          setStatus("error");
+          throw error;
+        }
+      } finally {
+        busy = false;
       }
-
-      await ensurePrepared(true);
-      await recorder.start();
-      recording = true;
-      setStatus("recording");
     },
 
     async stop() {
-      if (!recording) {
+      if (disposed || !recording || busy) {
         throw new TranscriptionError("No recording is in progress.");
       }
-      let audio: Blob;
+      const token = generation;
+      recording = false;
+      busy = true;
+      stopSettled = new Promise<void>((resolve) => {
+        resolveStop = resolve;
+      });
+      const cancelled = new Promise<undefined>((resolve) => {
+        interrupt = () => resolve(undefined);
+      });
       try {
-        audio = await recorder.stop();
-      } finally {
-        recording = false;
-      }
-
-      setStatus("transcribing");
-      try {
+        const audio = await recorder.stop();
+        if (disposed || token !== generation) return "";
+        setStatus("transcribing");
         const engine = await getWhisper();
+        if (disposed || token !== generation) return "";
         const file = new File([audio], "speech.webm", {
           type: audio.type || "audio/webm",
         });
         activeStream = engine.transcribe(file);
-        const segments = await activeStream.collect();
-        activeStream = undefined;
+        const segments = await Promise.race([
+          activeStream.collect(),
+          cancelled,
+        ]);
+        if (disposed || token !== generation || !segments) return "";
         setStatus("ready");
         return segments
           .map((segment) => segment.text.trim())
@@ -156,17 +180,38 @@ export function createSpeechToText(
           .join(" ")
           .trim();
       } catch (error) {
-        activeStream = undefined;
+        if (disposed || token !== generation) return "";
         setStatus("error");
         throw new TranscriptionError(
           "The recording could not be transcribed.",
           { cause: error },
         );
+      } finally {
+        activeStream = undefined;
+        interrupt = undefined;
+        busy = false;
+        resolveStop?.();
+        resolveStop = undefined;
+        stopSettled = undefined;
       }
     },
 
+    async cancel() {
+      if (disposed) return;
+      generation += 1;
+      recording = false;
+      recorder.cancel();
+      interrupt?.();
+      activeStream?.cancel?.();
+      await stopSettled;
+      if (!disposed) setStatus(prepared ? "ready" : "idle");
+    },
+
     dispose() {
+      if (disposed) return;
       disposed = true;
+      generation += 1;
+      interrupt?.();
       prepared = false;
       recording = false;
       cancelScheduledPreload();

@@ -28,6 +28,8 @@ export interface SpeechToText {
   start(): Promise<void>;
   /** Stops recording, transcribes it locally, and returns plain text. */
   stop(): Promise<string>;
+  /** Discards the active operation without releasing the prepared model. */
+  cancel(): Promise<void>;
   /** Stops tracks, cancels preparation/transcription, and releases resources. */
   dispose(): void;
 }
