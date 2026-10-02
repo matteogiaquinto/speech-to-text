@@ -23,16 +23,19 @@ export function createRecorder(): Recorder {
     generation += 1;
     const active = recorder;
     recorder = undefined;
-    if (active) {
-      active.ondataavailable = null;
-      active.onstop = null;
-      active.onerror = null;
-      if (active.state === "recording") active.stop();
+    try {
+      if (active) {
+        active.ondataavailable = null;
+        active.onstop = null;
+        active.onerror = null;
+        if (active.state === "recording") active.stop();
+      }
+    } finally {
+      chunks = [];
+      stopTracks();
+      settleStop?.(new Blob([]));
+      settleStop = undefined;
     }
-    chunks = [];
-    stopTracks();
-    settleStop?.(new Blob([]));
-    settleStop = undefined;
   };
 
   return {

@@ -200,11 +200,17 @@ export function createSpeechToText(
       if (disposed) return;
       generation += 1;
       recording = false;
-      recorder.cancel();
-      interrupt?.();
-      activeStream?.cancel?.();
-      await stopSettled;
-      if (!disposed) setStatus(prepared ? "ready" : "idle");
+      try {
+        recorder.cancel();
+      } finally {
+        interrupt?.();
+        try {
+          activeStream?.cancel?.();
+        } finally {
+          await stopSettled;
+          if (!disposed) setStatus(prepared ? "ready" : "idle");
+        }
+      }
     },
 
     dispose() {
@@ -217,12 +223,21 @@ export function createSpeechToText(
       cancelScheduledPreload();
       prepareController?.abort();
       prepareController = undefined;
-      activeStream?.cancel?.();
-      activeStream = undefined;
-      recorder.dispose();
-      whisper?.dispose();
-      whisper = undefined;
-      setStatus("idle");
+      try {
+        activeStream?.cancel?.();
+      } finally {
+        activeStream = undefined;
+        try {
+          recorder.dispose();
+        } finally {
+          try {
+            whisper?.dispose();
+          } finally {
+            whisper = undefined;
+            setStatus("idle");
+          }
+        }
+      }
     },
   };
 

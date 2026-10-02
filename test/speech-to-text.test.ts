@@ -9,6 +9,7 @@ const engine = vi.hoisted(() => ({
   }>,
   deleteModel: vi.fn().mockResolvedValue(undefined),
   segments: [{ text: " Bonjour " }, { text: "le monde " }],
+  preparation: undefined as Promise<void> | undefined,
 }));
 
 vi.mock("browser-whisper", () => ({
@@ -20,7 +21,7 @@ vi.mock("browser-whisper", () => ({
   BrowserWhisper: class {
     static deleteModel = engine.deleteModel;
     options: unknown;
-    downloadModel = vi.fn().mockResolvedValue(undefined);
+    downloadModel = vi.fn(() => engine.preparation ?? Promise.resolve());
     transcribe = vi.fn(() => ({
       collect: vi.fn().mockResolvedValue(engine.segments),
       cancel: vi.fn(),
@@ -84,9 +85,67 @@ afterEach(() => {
   engine.instances = [];
   engine.deleteModel.mockClear();
   engine.segments = [{ text: " Bonjour " }, { text: "le monde " }];
+  engine.preparation = undefined;
 });
 
 describe("createSpeechToText", () => {
+  it("invalidates a pending start while retaining completed preparation", async () => {
+    installMicrophone();
+    let finish!: () => void;
+    engine.preparation = new Promise((resolve) => {
+      finish = resolve;
+    });
+    const speech = createSpeechToText({ preload: "on-demand" });
+    const start = speech.start();
+    await vi.waitFor(() =>
+      expect(engine.instances[0]?.downloadModel).toHaveBeenCalledOnce(),
+    );
+    await expect(speech.start()).rejects.toBeInstanceOf(TranscriptionError);
+    await speech.cancel();
+    finish();
+    await start;
+    expect(navigator.mediaDevices.getUserMedia).not.toHaveBeenCalled();
+    expect(speech.isPrepared()).toBe(true);
+    await speech.start();
+    await speech.stop();
+    expect(engine.instances[0]?.downloadModel).toHaveBeenCalledOnce();
+  });
+
+  it("does not revive preparation or status after disposal", async () => {
+    let finish!: () => void;
+    engine.preparation = new Promise((resolve) => {
+      finish = resolve;
+    });
+    const status = vi.fn();
+    const speech = createSpeechToText({
+      preload: "on-demand",
+      onStatus: status,
+    });
+    const preparation = speech.prepare();
+    await vi.waitFor(() =>
+      expect(engine.instances[0]?.downloadModel).toHaveBeenCalledOnce(),
+    );
+    speech.dispose();
+    finish();
+    await preparation;
+    expect(speech.isPrepared()).toBe(false);
+    expect(status).toHaveBeenLastCalledWith("idle");
+  });
+
+  it("recovers after transcription failure without losing the model", async () => {
+    const release = installMicrophone();
+    const speech = createSpeechToText({ preload: "on-demand" });
+    await speech.start();
+    engine.instances[0]!.transcribe.mockReturnValueOnce({
+      collect: () => Promise.reject(new Error("inference failed")),
+      cancel: vi.fn(),
+    });
+    await expect(speech.stop()).rejects.toBeInstanceOf(TranscriptionError);
+    expect(release).toHaveBeenCalledOnce();
+    expect(speech.isPrepared()).toBe(true);
+    await speech.start();
+    expect(await speech.stop()).toBe("Bonjour le monde");
+  });
   it("cancels capture, releases tracks, and reuses the prepared engine", async () => {
     const release = installMicrophone();
     const status = vi.fn();
