@@ -202,10 +202,15 @@ export function createSpeechToText(
       recording = false;
       try {
         recorder.cancel();
+      } catch {
+        // Cancellation is a best-effort public cleanup operation. Recorder diagnostics are
+        // contained after chunks and tracks have been discarded.
       } finally {
         interrupt?.();
         try {
           activeStream?.cancel?.();
+        } catch {
+          // A late inference cancellation must not make Escape/slide cancellation fail.
         } finally {
           await stopSettled;
           if (!disposed) setStatus(prepared ? "ready" : "idle");

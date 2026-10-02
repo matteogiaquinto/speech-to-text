@@ -168,6 +168,24 @@ describe("createSpeechToText", () => {
     await speech.cancel();
     await expect(speech.start()).rejects.toBeInstanceOf(TranscriptionError);
   });
+  it("public cancellation resolves after recorder cleanup errors", async () => {
+    const release = installMicrophone();
+    class ThrowingRecorder extends FakeMediaRecorder {
+      override stop() {
+        this.state = "inactive";
+        throw new Error("stop failed after cleanup");
+      }
+    }
+    Object.defineProperty(globalThis, "MediaRecorder", {
+      configurable: true,
+      value: ThrowingRecorder,
+    });
+    const speech = createSpeechToText({ preload: "on-demand" });
+    await speech.start();
+    await expect(speech.cancel()).resolves.toBeUndefined();
+    expect(release).toHaveBeenCalledOnce();
+    expect(speech.isPrepared()).toBe(true);
+  });
 
   it("cancels an initiated stop before transcription", async () => {
     installMicrophone();

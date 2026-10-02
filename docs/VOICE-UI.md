@@ -61,7 +61,7 @@ While a recording was started by the current held pointer, dragging left should 
 
 Crossing about 64 px cancels the recording and discards the result.
 
-Call `await speech.cancel()` to discard the recording without destroying the prepared Whisper runtime.
+Call `await speech.cancel()` to discard the recording without destroying the prepared Whisper runtime. Public cancellation resolves after cleanup even if a low-level recorder stop reports an error.
 
 Do not apply the transcript after a cancelled gesture.
 
