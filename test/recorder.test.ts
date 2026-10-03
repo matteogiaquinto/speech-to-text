@@ -42,6 +42,32 @@ afterEach(() => {
 });
 
 describe("createRecorder", () => {
+  it("releases tracks even when MediaRecorder.stop throws during cancellation", async () => {
+    const stop = vi.fn();
+    Object.defineProperty(globalThis, "MediaRecorder", {
+      configurable: true,
+      value: FakeMediaRecorder,
+    });
+    Object.defineProperty(globalThis.navigator, "mediaDevices", {
+      configurable: true,
+      value: {
+        getUserMedia: vi
+          .fn()
+          .mockResolvedValue({ getTracks: () => [{ stop }] }),
+      },
+    });
+    const recorder = createRecorder();
+    await recorder.start();
+    vi.spyOn(FakeMediaRecorder.instances[0]!, "stop").mockImplementationOnce(
+      () => {
+        throw new Error("recorder failure");
+      },
+    );
+    expect(() => recorder.cancel()).toThrow("recorder failure");
+    expect(stop).toHaveBeenCalledOnce();
+    await recorder.start();
+    await recorder.stop();
+  });
   it("records a blob and stops microphone tracks", async () => {
     const stop = vi.fn();
     const stream = { getTracks: () => [{ stop }] } as unknown as MediaStream;

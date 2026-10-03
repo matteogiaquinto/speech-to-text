@@ -36,7 +36,7 @@ When an agent is asked to integrate this speech-to-text system into another appl
 16. Create one long-lived speech-to-text instance for the relevant mounted feature and reuse it across successful recordings. Do not create a new Whisper instance for every click.
 17. Use the package default background preload after the page `load` event and browser idle time. Set `preload: "on-demand"` only when the host product intentionally wants first-use preparation. `start()` handles either mode and waits for preparation before recording.
 18. On a normal stop, call `stop()`, wait for transcription, then insert the returned string into the active field.
-19. On slide-to-cancel, discard the result. The current package has no dedicated `cancel()` method; disposing/recreating the active instance is acceptable because the browser model cache remains.
+19. On slide-to-cancel or Escape, call `await speech.cancel()`. Discard any interrupted stop result and reuse the prepared instance.
 20. Preserve existing field content. Prefer inserting transcription at the caret/selection when practical; otherwise append with exactly one separating space.
 21. Use the application's state update mechanism for controlled fields. Do not mutate DOM `.value` directly in React/Vue/etc. unless the field is intentionally uncontrolled.
 22. Keep manual typing usable while idle and after errors.

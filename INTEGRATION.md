@@ -86,7 +86,7 @@ const transcript = await speech.stop();
 
 While `stop()` is processing, collapse the active capsule and show a transcribing/busy indicator.
 
-For slide-to-cancel, do not insert a transcript. The current package has no dedicated cancel API; disposing/recreating the active instance is acceptable when true discard behavior is required. The browser model cache remains intact.
+For slide-to-cancel or Escape, call `await speech.cancel()`. It is best-effort cleanup: audio is discarded, tracks are released and the promise resolves even if a low-level recorder stop reports an error. The prepared Whisper runtime remains available for the next recording.
 
 ### Applying the transcript
 

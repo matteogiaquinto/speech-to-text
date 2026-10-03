@@ -61,7 +61,7 @@ While a recording was started by the current held pointer, dragging left should 
 
 Crossing about 64 px cancels the recording and discards the result.
 
-The current package has no dedicated `cancel()` method. A consumer that needs true discard behavior can dispose the active speech-to-text instance and create a new one. This releases the active recorder/runtime but does not delete the model files cached for the site origin.
+Call `await speech.cancel()` to discard the recording without destroying the prepared Whisper runtime. Public cancellation resolves after cleanup even if a low-level recorder stop reports an error.
 
 Do not apply the transcript after a cancelled gesture.
 
