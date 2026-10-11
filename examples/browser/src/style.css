@@ -1043,10 +1043,6 @@ footer a:hover {
   color: rgba(23, 25, 35, 0.62);
 }
 
-:root[data-theme="light"] .how-it-works {
-  border-color: rgba(23, 25, 35, 0.13);
-}
-
 :root[data-theme="light"] .pipeline div {
   color: rgba(23, 25, 35, 0.8);
 }
@@ -1130,8 +1126,6 @@ footer a:hover {
   width: min(1100px, calc(100% - 48px));
   margin: 0 auto;
   padding: 110px 48px 100px;
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  border-bottom: 0;
   text-align: center;
 }
 
